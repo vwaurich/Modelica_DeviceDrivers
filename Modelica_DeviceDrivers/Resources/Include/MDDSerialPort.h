@@ -105,7 +105,7 @@ DWORD WINAPI MDD_serialPortReceivingThread(LPVOID p_serial) {
                         ret = ReadFile(serial->hComm, serial->receiveBuffer, x, &serial->receivedBytes, &rdSync);
                         if(serial->receivedBytes != serial->bufferSize)
                         {
-                          ret = false;
+                          ret = FALSE;
                           //printf("got only %u byte for %u byte buffer\n", serial->receivedBytes,serial->bufferSize );
                           memcpy(serial->receiveBuffer, serial->receiveBufferBackup, serial->bufferSize);
                         }
