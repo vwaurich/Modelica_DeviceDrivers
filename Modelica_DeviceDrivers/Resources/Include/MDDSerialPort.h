@@ -103,7 +103,7 @@ DWORD WINAPI MDD_serialPortReceivingThread(LPVOID p_serial) {
                             x = (DWORD)serial->bufferSize;
                         }
                         ret = ReadFile(serial->hComm, serial->receiveBuffer, x, &serial->receivedBytes, &rdSync);
-                        if(serial->receivedBytes != serial->bufferSize)
+                        if(serial->receivedBytes < serial->bufferSize)
                         {
                           ret = FALSE;
                           //printf("got only %u byte for %u byte buffer\n", serial->receivedBytes,serial->bufferSize );
@@ -326,6 +326,7 @@ DllExport void MDD_serialPortDestructor(void * p_serial) {
             CloseHandle(serial->hThread);
             DeleteCriticalSection(&serial->receiveLock);
             free(serial->receiveBuffer);
+            free(serial->receiveBufferBackup);
         }
         CloseHandle(serial->hComm);
         free(serial);
