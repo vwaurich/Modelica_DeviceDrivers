@@ -32,6 +32,7 @@ typedef struct {
     HANDLE hThread;
     int receiving;
     char* receiveBuffer;
+    char* receiveBufferBackup;
     size_t bufferSize;
     DWORD receivedBytes;
     DWORD receiveError;
@@ -102,6 +103,18 @@ DWORD WINAPI MDD_serialPortReceivingThread(LPVOID p_serial) {
                             x = (DWORD)serial->bufferSize;
                         }
                         ret = ReadFile(serial->hComm, serial->receiveBuffer, x, &serial->receivedBytes, &rdSync);
+                        if(serial->receivedBytes < serial->bufferSize)
+                        {
+                          ret = FALSE;
+                          //printf("got only %u byte for %u byte buffer\n", serial->receivedBytes,serial->bufferSize );
+                          memcpy(serial->receiveBuffer, serial->receiveBufferBackup, serial->bufferSize);
+                        }
+                        else
+                        {
+                          //printf("got %u of %u\n", serial->receivedBytes,serial->bufferSize );
+                          memcpy(serial->receiveBufferBackup, serial->receiveBuffer, serial->bufferSize);
+                        }
+
                         if (!ret) {
                             if (GetLastError() == ERROR_IO_PENDING) {
                                 GetOverlappedResult(serial->hComm, &rdSync, &rxCount, TRUE);
@@ -220,6 +233,7 @@ DllExport void * MDD_serialPortConstructor(const char * deviceName, int bufferSi
         if (receiver) {
             DWORD id1;
             serial->receiveBuffer = (char*)calloc(bufferSize, 1);
+            serial->receiveBufferBackup = (char*)calloc(bufferSize, 1);
             InitializeCriticalSection(&serial->receiveLock);
             serial->hThread = CreateThread(0, 0, MDD_serialPortReceivingThread, serial, 0, &id1);
             if (!serial->hThread) {
@@ -312,6 +326,7 @@ DllExport void MDD_serialPortDestructor(void * p_serial) {
             CloseHandle(serial->hThread);
             DeleteCriticalSection(&serial->receiveLock);
             free(serial->receiveBuffer);
+            free(serial->receiveBufferBackup);
         }
         CloseHandle(serial->hComm);
         free(serial);
