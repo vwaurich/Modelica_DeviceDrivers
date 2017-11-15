@@ -17,3 +17,7 @@ TestInputKeyboardKey
 TestHardwareIOComedi
 TestSerialPackager_TCPIP
 TestSerialPackager_LCM
+Arduino_readInt
+TestSerialPackager_TCPIP_test
+TestSerialPackager_PCAN_Angles
+TestSerialPackager_PCAN_Accel

@@ -448,9 +448,11 @@ sudo route add -net 224.0.0.0 netmask 240.0.0.0 dev lo
       "Buffer size of message data in bytes (if not deduced automatically)." annotation(Dialog(enable=not autoBufferSize, group="Outgoing data"));
     parameter LCMProvider provider=LCMProvider.UDPM "LCM network provider"
       annotation (Dialog(group="Outgoing data"));
-    parameter String address="224.0.0.0" "UDP multicast IP address or logfile name"
+    parameter String address="224.0.0.0"
+      "UDP multicast IP address or logfile name"
       annotation (Dialog(group="Outgoing data", enable=(provider==LCMProvider.UDPM or provider==LCMProvider.FILE)));
-    parameter Integer port=10002 "UDP port (all receivers must bind to the same port to receive the multicast messages)"
+    parameter Integer port=10002
+      "UDP port (all receivers must bind to the same port to receive the multicast messages)"
       annotation (Dialog(group="Outgoing data", enable=provider==LCMProvider.UDPM));
     parameter String channel_send="" "Channel name"
       annotation (Dialog(group="Outgoing data"));
@@ -934,6 +936,190 @@ See <a href=\"modelica://Modelica_DeviceDrivers.Blocks.Examples.TestSerialPackag
 <p>Please have a look in the respective documentation to Socket CAN. A physical CAN interface will require more configuration settings than the virtual interface (e.g., bitrate setting).</p>
 </html>"));
   end SocketCAN;
+
+  package PCAN "Support for the PEAK-Systems CAN-devices."
+    extends Modelica.Icons.Package;
+    model Connect2CAN "Connect to PCAN hardware"
+    extends Modelica_DeviceDrivers.Utilities.Icons.SocketCANRecordIcon;
+      import Modelica_DeviceDrivers.Communication.PCAN;
+      final parameter PCAN pcan = PCAN() "PCAN connection object";
+      annotation (preferredView="info",
+              Icon(graphics={
+                     Text(
+              extent={{-98,70},{98,42}},
+              textString="%ifrName")}),
+        Documentation(info="<html>
+<h4><font color=\"#008000\">Support for Linux Socket CAN bus</font></h4>
+<p><b>Please, read the package information for <a href=\"modelica://Modelica_DeviceDrivers.Blocks.Communication.SocketCAN\"><code>SocketCAN</code></a> first!</b></p>
+<h4><font color=\"#008000\">Example</font></h4>
+<p>
+See <a href=\"modelica://Modelica_DeviceDrivers.Blocks.Examples.TestSerialPackager_SocketCAN\"><code>TestSerialPackager_SocketCAN</code></a>.
+</p>
+</html>"));
+    end Connect2CAN;
+
+    block ReadMessage "Set up a message for receiving data"
+      extends Modelica_DeviceDrivers.Utilities.Icons.BaseIcon;
+      extends Modelica_DeviceDrivers.Utilities.Icons.SocketCANBlockIcon;
+      extends
+        Modelica_DeviceDrivers.Blocks.Communication.Internal.PartialSampleTrigger;
+      import Modelica_DeviceDrivers;
+      import Modelica_DeviceDrivers.Communication.PCAN;
+      import Modelica_DeviceDrivers.Packaging.SerialPackager;
+
+      parameter PCAN pcan "external pcan object";
+      parameter Integer id(min=0) = 0 "Identifier of CAN message (CAN Id)";
+      parameter Integer len(min=0,max=8) = 8
+        "Data length code (payload of data in bytes, max=8)";
+      Interfaces.PackageOut pkgOut(pkg = SerialPackager(len), dummy(start=0, fixed=true))
+        annotation (Placement(transformation(extent={{-20,-20},{20,20}},
+            rotation=90,
+            origin={108,0})));
+
+    equation
+      pkgOut.trigger = actTrigger "using inherited trigger";
+      when pkgOut.trigger then
+        pkgOut.dummy = Modelica_DeviceDrivers.Blocks.Communication.PCAN.Internal.readObjectDummy(
+          pcan,
+          id,
+          pkgOut.pkg,
+          time);
+    end when;
+
+      annotation (preferredView="info",
+      defaultComponentName="rxMessage",
+      Icon(graphics={Text(
+              extent={{-98,86},{98,58}},
+              textString="Rx id: %can_id"),
+            Text(
+              extent={{-92,-56},{36,-88}},
+              textString="(%startTime, %sampleTime) s",
+              horizontalAlignment=TextAlignment.Left)}),
+        Documentation(info="<html>
+<h4><font color=\"#008000\">Support for Linux Socket CAN interface</font></h4>
+<p><b>Please, read the package information for <a href=\"modelica://Modelica_DeviceDrivers.Blocks.Communication.SocketCAN\"><code>SocketCAN</code></a> first!</b></p>
+<h4><font color=\"#008000\">Example</font></h4>
+<p>
+See <a href=\"modelica://Modelica_DeviceDrivers.Blocks.Examples.TestSerialPackager_SocketCAN\"><code>TestSerialPackager_SocketCAN</code></a>.
+</p>
+</html>"));
+    end ReadMessage;
+
+    block WriteMessage "Set up a message for transmitting data"
+      import Modelica_DeviceDrivers;
+      extends Modelica_DeviceDrivers.Utilities.Icons.BaseIcon;
+      extends Modelica_DeviceDrivers.Utilities.Icons.SocketCANBlockIcon;
+      extends
+        Modelica_DeviceDrivers.Blocks.Communication.Internal.PartialSampleTrigger;
+      import Modelica_DeviceDrivers.Communication.SocketCAN;
+      import Modelica_DeviceDrivers.Packaging.SerialPackager;
+      parameter Modelica_DeviceDrivers.Blocks.Communication.PCAN.Connect2CAN
+        config "Socket CAN configuration (socket) to use for this block"
+        annotation (__Dymola_componentsMatching=true);
+      parameter Integer can_id(min=0) "Identifier of CAN message (CAN Id)";
+      parameter Integer can_dlc(min=0,max=8) = 8
+        "Data length code (payload of data in bytes, max=8)";
+      Interfaces.PackageIn pkgIn
+        annotation (Placement(transformation(extent={{-20,-20},{20,20}},
+            rotation=-90,
+            origin={-108,0})));
+    protected
+      Real dummy(start=0, fixed=true);
+    equation
+      when initial() then
+        pkgIn.userPkgBitSize = can_dlc*8;
+        pkgIn.autoPkgBitSize = 0;
+        Modelica_DeviceDrivers.Communication.SocketCAN_.defineObject(
+                               config.dh, can_id, can_dlc);
+      end when;
+
+      pkgIn.backwardTrigger = actTrigger "using inherited trigger";
+      when pkgIn.trigger then
+        dummy = Modelica_DeviceDrivers.Blocks.Communication.SocketCAN.Internal.writeDummy(
+          config.dh,
+          can_id,
+          can_dlc,
+          pkgIn.pkg,
+          pkgIn.dummy);
+      end when;
+      annotation (preferredView="info",
+      defaultComponentName="txMessage",
+      Icon(coordinateSystem(preserveAspectRatio=false, extent={{-100,-100},{100,
+                100}}),
+           graphics={
+            Text(
+              extent={{-90,84},{96,54}},
+              textString="Tx id: %can_id"),
+            Text(
+              extent={{-92,-58},{36,-90}},
+              textString="(%startTime, %sampleTime) s",
+              horizontalAlignment=TextAlignment.Left)}),
+        Documentation(info="<html>
+<h4><font color=\"#008000\">Support for Linux Socket CAN interface</font></h4>
+<p><b>Please, read the package information for <a href=\"modelica://Modelica_DeviceDrivers.Blocks.Communication.SocketCAN\"><code>SocketCAN</code></a> first!</b></p>
+<h4><font color=\"#008000\">Example</font></h4>
+<p>
+See <a href=\"modelica://Modelica_DeviceDrivers.Blocks.Examples.TestSerialPackager_SocketCAN\"><code>TestSerialPackager_SocketCAN</code></a>.
+</p>
+</html>"));
+    end WriteMessage;
+
+    package Internal
+      extends Modelica.Icons.InternalPackage;
+
+      encapsulated function readObjectDummy
+        "Read CAN frame/message from socket"
+        import Modelica_DeviceDrivers.Communication.PCAN;
+        import Modelica_DeviceDrivers;
+        import Modelica_DeviceDrivers.Packaging.SerialPackager;
+
+        input PCAN pcan;
+        input Integer id "CAN frame identifier";
+        input SerialPackager pkg;
+        input Real dummy;
+        output Real dummy2;
+
+      protected
+        Integer len;
+        Integer timeStamp;
+
+      algorithm
+        (len, timeStamp) := Modelica_DeviceDrivers.Communication.PCAN_.read(pcan, id, pkg);
+        dummy2 := dummy;
+      end readObjectDummy;
+
+      encapsulated function writeDummy "Write CAN frame/message to socket"
+        import Modelica_DeviceDrivers.Communication.SocketCAN;
+        import Modelica_DeviceDrivers;
+        import Modelica_DeviceDrivers.Packaging.SerialPackager;
+
+        input SocketCAN socketCAN;
+        input Integer can_id "CAN frame identifier";
+        input Integer can_dlc(min=0,max=8)
+          "length of data in bytes (min=0, max=8)";
+        input SerialPackager pkg;
+        input Real dummy;
+        output Real dummy2;
+      algorithm
+        Modelica_DeviceDrivers.Communication.SocketCAN_.write(socketCAN, can_id, can_dlc, pkg);
+        dummy2 := dummy;
+      end writeDummy;
+    end Internal;
+    annotation (preferredView="info",Documentation(info="<html>
+<h4><font color=\"#008000\">Support for Linux Socket CAN interface</font></h4>
+<p>Modelica external function interface to use the CAN socket interface of the Linux kernel (<a href=\"https://www.kernel.org/doc/Documentation/networking/can.txt\">https://www.kernel.org/doc/Documentation/networking/can.txt</a>). </p>
+<p><b>So far only testet with the virtual CAN interface &quot;vcan&quot;</b>. However, in principle it should work similarly with an underlying &quot;real&quot; CAN-device which is supported by the Socket CAN interface.</p>
+<h4><font color=\"#008000\">Setup of a virtual CAN interface</font></h4>
+<p>Even if a Linux computer doesn&apos;t have a CAN device, it is possible to setup a virtual CAN device that can be used similarly to a physical device. This section discusses the necessary steps to bring up a virtual CAN device (tested with Ubuntu 12.04) which can be used with the <a href=\"Modelica://Modelica_DeviceDrivers.Blocks.Examples.TestSerialPackager_SocketCAN\">SocketCAN example model</a>. Note that this usually requires root rights. Also executing the Modelica example model might require root rights.</p>
+<ul>
+<li>Load the vcan kernel model:<br/><code>sudo modprobe vcan</code></li>
+<li>Create a virtual CAN device with default name (default name will be &quot;vcan0&quot;):<br/><code>sudo ip link add type vcan</code></li>
+<li>Bring the device up:<br/><code>sudo ifconfig vcan0 up</code></li>
+</ul>
+<h4><font color=\"#008000\">Setup of a physical CAN interface</font></h4>
+<p>Please have a look in the respective documentation to Socket CAN. A physical CAN interface will require more configuration settings than the virtual interface (e.g., bitrate setting).</p>
+</html>"));
+  end PCAN;
 
   package Internal
     extends Modelica.Icons.InternalPackage;

@@ -2,9 +2,11 @@ SharedMemory
 SharedMemory_
 UDPSocket
 UDPSocket_
+SocketCAN
+PCAN
+PCAN_
 SoftingCAN
 SoftingCAN_
-SocketCAN
 SocketCAN_
 SerialPort
 SerialPort_
