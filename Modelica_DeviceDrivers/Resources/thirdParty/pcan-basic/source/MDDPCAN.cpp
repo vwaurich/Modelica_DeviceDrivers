@@ -50,7 +50,7 @@ static DWORD WINAPI readingThread(LPVOID p_PCAN)
 
 /** Constructor for real array
 */
-extern "C" DllExport void* MDD_PCAN_Constructor(int channelName, int baudrate) {
+extern "C" DLLExport void* MDD_PCAN_Constructor(int channelName, int baudrate) {
 	ModelicaFormatMessage("MDDPCAN::MDD_PCAN_Constructor!\n");
 
 	MDD_PCAN* pcan = (MDD_PCAN*)calloc(1, sizeof(MDD_PCAN));
@@ -82,14 +82,16 @@ extern "C" DllExport void* MDD_PCAN_Constructor(int channelName, int baudrate) {
 
 	//reading thread
 	pcan->readThreadHandle = CreateThread(0, 0, readingThread, pcan, 0, &pcan->readThreadID);
+	ModelicaFormatMessage("MDDPCAN::MDD_PCAN_Constructor!\n");
 
 	return (void*)pcan;
 }
 
 /** Destructor for real array
 */
-extern "C" DllExport void MDD_PCAN_Destructor(void* p_pcan) {
+extern "C" DLLExport void MDD_PCAN_Destructor(void* p_pcan) {
 	MDD_PCAN* pcan = (MDD_PCAN*)p_pcan;
+	ModelicaFormatMessage("MDDPCAN::MDD_PCAN_Destructor!\n");
 
 	//close thread
 	WaitForSingleObject(pcan->readThreadHandle, 1000);
@@ -106,7 +108,7 @@ extern "C" DllExport void MDD_PCAN_Destructor(void* p_pcan) {
 }
 
 /** Read CAN message*/
-extern "C" DllExport void MDD_PCANReadP(void* p_pcan, int id, void* p_serialp, int* len, int* timeStamp)
+extern "C" DLLExport void MDD_PCANReadP(void* p_pcan, int id, void* p_serialp, int* len, int* timeStamp)
 {
 	MDD_PCAN* pcan = (MDD_PCAN*)p_pcan;
 	len[0] = 0;
