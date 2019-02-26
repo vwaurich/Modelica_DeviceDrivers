@@ -11,6 +11,7 @@ TestSerialPackager_SharedMemoryExternalTrigger
 TestSerialPackager_SoftingCAN
 TestSerialPackager_SocketCAN
 TestSerialPackager_SerialPort
+TestSerialPackager_SerialPortReadWrite
 TestInputSpaceMouse
 TestInputJoystick
 TestInputKeyboard

@@ -315,6 +315,84 @@ See <a href=\"modelica://Modelica_DeviceDrivers.Blocks.Examples.TestSerialPackag
 </html>"));
   end SerialPortSend;
 
+  block SerialPortSendReceive
+    "A block for receiving and sending serial datagrams using the serial interface"
+    extends Modelica_DeviceDrivers.Utilities.Icons.SerialPortIcon;
+    extends
+      Modelica_DeviceDrivers.Blocks.Communication.Internal.PartialSampleTrigger;
+    import Modelica_DeviceDrivers.Packaging.SerialPackager;
+    import Modelica_DeviceDrivers.Packaging.alignAtByteBoundary;
+    import Modelica_DeviceDrivers.Communication.SerialPort;
+    import Modelica_DeviceDrivers.Utilities.Types.SerialBaudRate;
+    parameter Boolean autoBufferSize = true
+      "true, buffer size is deduced automatically, otherwise set it manually"
+      annotation(Dialog(group="Incoming data"), choices(checkBox=true));
+    parameter Integer userBufferSizeOut=16*64
+      "Buffer size of message data in bytes (if not deduced automatically)" annotation(Dialog(enable=not autoBufferSize, group="Incoming data"));
+    parameter Integer userBufferSizeIn=16*64
+      "Buffer size of message data in bytes (if not deduced automatically)" annotation(Dialog(enable=not autoBufferSize, group="Incoming data"));
+    parameter String Serial_Port="/dev/ttyPS1" "Serial port to send data"
+     annotation (Dialog(group="Incoming data"));
+    parameter SerialBaudRate baud= SerialBaudRate.B9600 "Serial port baud rate"
+    annotation (Dialog(group="Incoming data"));
+    parameter Integer parity = 0
+      "set parity (0 - no parity, 1 - even, 2 - odd)"
+      annotation (Dialog(group="Outgoing data"));
+    Interfaces.PackageOut pkgOut(pkg = SerialPackager(if autoBufferSize then bufferSizeOut else userBufferSizeOut), dummy(start=0, fixed=true))
+      annotation (Placement(transformation(
+          extent={{-20,-20},{20,20}},
+          rotation=90,
+          origin={108,0})));
+    Interfaces.PackageIn pkgIn annotation (
+        Placement(transformation(
+          extent={{-20,-20},{20,20}},
+          rotation=270,
+          origin={-108,0})));
+  protected
+    Integer bufferSizeOut, bufferSizeIn;
+    SerialPort sPort = SerialPort(Serial_Port, if autoBufferSize then bufferSizeOut else userBufferSizeOut, parity, receiver, baud);
+    parameter Integer receiver = 2 "Set to 2 to be a receiver and a writer port";
+    Real dummy(start=0, fixed=true);
+
+
+  equation
+    when initial() then
+      bufferSizeOut = if autoBufferSize then alignAtByteBoundary(pkgOut.autoPkgBitSize) else userBufferSizeOut;
+      pkgIn.userPkgBitSize = if autoBufferSize then -1 else userBufferSizeIn*8;
+      pkgIn.autoPkgBitSize = 0;
+      bufferSizeIn = if autoBufferSize then Modelica_DeviceDrivers.Packaging.SerialPackager_.getBufferSize(pkgIn.pkg) else userBufferSizeIn;
+    end when;
+    pkgOut.trigger = actTrigger "using inherited trigger";
+    pkgIn.backwardTrigger = actTrigger "using inherited trigger";
+    when pkgOut.trigger then
+      pkgOut.dummy = Modelica_DeviceDrivers.Blocks.Communication.Internal.DummyFunctions.readSerial(
+        sPort,
+        pkgOut.pkg,
+        time);
+    end when;
+
+    when pkgIn.trigger then
+      dummy = Modelica_DeviceDrivers.Blocks.Communication.Internal.DummyFunctions.sendToSerial(
+        sPort,
+        pkgIn.pkg,
+        bufferSizeIn,
+        pkgIn.dummy);
+    end when;
+
+    annotation (preferredView="info",
+            Icon(coordinateSystem(preserveAspectRatio=false, extent={{-100,
+              -100},{100,100}}), graphics={Text(extent={{-150,136},{150,96}},
+              textString="%name"),         Text(extent={{-150,82},{150,42}},
+            textString="%Serial_Port"),            Text(extent={{-152,-48},{148,-88}},
+            textString="%baud")}), Documentation(info="<html>
+<h4>Support for receiving datagrams over a serial port</h4>
+<h4>Example</h4>
+<p>
+See <a href=\"modelica://Modelica_DeviceDrivers.Blocks.Examples.TestSerialPackager_SerialPort\"><code>TestSerialPackager_SerialPort</code></a>.
+</p>
+</html>"));
+  end SerialPortSendReceive;
+
   block TCPIP_Client_IO "A client block for TCP/IP socket communication"
     import Modelica_DeviceDrivers;
     extends Modelica_DeviceDrivers.Utilities.Icons.BaseIcon;

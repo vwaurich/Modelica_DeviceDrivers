@@ -230,7 +230,7 @@ DllExport void * MDD_serialPortConstructor(const char * deviceName, int bufferSi
         serial->bufferSize = (size_t)bufferSize;
         serial->receiving = 1;
         serial->receivedBytes = 0;
-        if (receiver) {
+        if (receiver==1 || receiver==2) {
             DWORD id1;
             serial->receiveBuffer = (char*)calloc(bufferSize, 1);
             InitializeCriticalSection(&serial->receiveLock);
