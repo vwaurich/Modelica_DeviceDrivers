@@ -1,5 +1,6 @@
 within Modelica_DeviceDrivers.Blocks;
-package Communication "Blocks for communication devices such as network, CAN, shared memory, etc."
+package Communication
+  "Blocks for communication devices such as network, CAN, shared memory, etc."
     extends Modelica.Icons.Package;
   block SharedMemoryRead
     "A block for reading data out of shared memory buffers"
@@ -111,8 +112,11 @@ provided by the parameter <b>memoryID</b>. If the shared memory partition does n
     parameter Integer port_recv=10001
       "Listening port number of the server. Must be unique on the system"
       annotation (Dialog(group="Incoming data"));
-    parameter Boolean useRecvThread=true "true, dedicated receiving thread writes datagrams into shared buffer (latest available datagram is used by simulation thread). Otherwise, simulation progress is blocked until a new incoming datagram is available"  annotation(Dialog(group="Incoming data"), choices(checkBox=true));
-    parameter Boolean showReceivedBytesPort = false "=true, if number of received bytes port is visible" annotation(Dialog(tab="Advanced"),Evaluate=true, HideResult=true, choices(checkBox=true));
+    parameter Boolean useRecvThread=true
+      "true, dedicated receiving thread writes datagrams into shared buffer (latest available datagram is used by simulation thread). Otherwise, simulation progress is blocked until a new incoming datagram is available"
+                                                                                                          annotation(Dialog(group="Incoming data"), choices(checkBox=true));
+    parameter Boolean showReceivedBytesPort = false
+      "=true, if number of received bytes port is visible"                                               annotation(Dialog(tab="Advanced"),Evaluate=true, HideResult=true, choices(checkBox=true));
     Interfaces.PackageOut pkgOut(pkg = SerialPackager(if autoBufferSize then bufferSize else userBufferSize), dummy(start=0, fixed=true))
       annotation (Placement(transformation(
           extent={{-20,-20},{20,20}},
@@ -121,7 +125,8 @@ provided by the parameter <b>memoryID</b>. If the shared memory partition does n
     Modelica.Blocks.Interfaces.IntegerOutput nRecvBytes(start=0, fixed=true)
       "Number of received bytes" annotation (Placement(visible=
             showReceivedBytesPort, transformation(extent={{100,70},{120,90}})));
-    output Integer nRecvbufOverwrites(start=0, fixed=true) "Accumulated number of times new data was received without having been read out (retrieved) by Modelica";
+    output Integer nRecvbufOverwrites(start=0, fixed=true)
+      "Accumulated number of times new data was received without having been read out (retrieved) by Modelica";
   protected
     Integer bufferSize;
     UDPSocket socket = UDPSocket(port_recv, if autoBufferSize then bufferSize else userBufferSize, useRecvThread);
@@ -389,7 +394,8 @@ See <a href=\"modelica://Modelica_DeviceDrivers.Blocks.Examples.TestSerialPackag
       "Buffer size of message data in bytes (if not deduced automatically)" annotation(Dialog(enable=not autoBufferSize, group="Incoming data"));
     parameter LCMProvider provider=LCMProvider.UDPM "LCM network provider"
       annotation (Dialog(group="Incoming data"));
-    parameter String address="224.0.0.0" "UDP multicast IP address or logfile name"
+    parameter String address="224.0.0.0"
+      "UDP multicast IP address or logfile name"
       annotation (Dialog(group="Incoming data", enable=(provider==LCMProvider.UDPM or provider==LCMProvider.FILE)));
     parameter Integer port=10001
       "UDP port (receivers must bind to the same port as the sender to receive multicast messages)"
@@ -457,9 +463,11 @@ sudo route add -net 224.0.0.0 netmask 240.0.0.0 dev lo
       "Buffer size of message data in bytes (if not deduced automatically)." annotation(Dialog(enable=not autoBufferSize, group="Outgoing data"));
     parameter LCMProvider provider=LCMProvider.UDPM "LCM network provider"
       annotation (Dialog(group="Outgoing data"));
-    parameter String address="224.0.0.0" "UDP multicast IP address or logfile name"
+    parameter String address="224.0.0.0"
+      "UDP multicast IP address or logfile name"
       annotation (Dialog(group="Outgoing data", enable=(provider==LCMProvider.UDPM or provider==LCMProvider.FILE)));
-    parameter Integer port=10002 "UDP port (all receivers must bind to the same port to receive the multicast messages)"
+    parameter Integer port=10002
+      "UDP port (all receivers must bind to the same port to receive the multicast messages)"
       annotation (Dialog(group="Outgoing data", enable=provider==LCMProvider.UDPM));
     parameter String channel_send="" "Channel name"
       annotation (Dialog(group="Outgoing data"));
@@ -529,7 +537,8 @@ sudo route add -net 224.0.0.0 netmask 240.0.0.0 dev lo
       annotation(Dialog(enable=not autoBufferSize, group="Incoming data"));
     parameter MQTTProvider provider = MQTTProvider.TCP "MQTT network protocol"
       annotation(Dialog(group="Incoming data", groupImage="modelica://Modelica_DeviceDrivers/Resources/Images/pahologo.png"));
-    parameter MQTTVersion protocolVersion = MQTTVersion.DEFAULT "MQTT network protocol version"
+    parameter MQTTVersion protocolVersion = MQTTVersion.DEFAULT
+      "MQTT network protocol version"
       annotation(Dialog(group="Incoming data"));
     parameter String address = "localhost" "IP address"
       annotation(Dialog(group="Incoming data"));
@@ -538,42 +547,57 @@ sudo route add -net 224.0.0.0 netmask 240.0.0.0 dev lo
     parameter String channel_recv = "" "Channel name"
       annotation(Dialog(group="Incoming data"));
     parameter Integer QoS(min=0, max=2) = 1 "Quality of service"
-      annotation(Dialog(group="Incoming data"), choices(choice=0 "At most once", choice=1 "At least once", choice=2 "Exactly once"));
-    parameter String clientID = "recv-" + getMACAddress() "Unique client identifier"
+      annotation(Dialog(group="Incoming data"), choices(choice=0 "At most once", choice=1
+          "At least once",                                                                                 choice=2
+          "Exactly once"));
+    parameter String clientID = "recv-" + getMACAddress()
+      "Unique client identifier"
       annotation(Dialog(group="Server connection", tab="Advanced"));
-    parameter Integer keepAliveInterval = 60 "Maximum time (in seconds) that should pass without communication between the client and the server"
+    parameter Integer keepAliveInterval = 60
+      "Maximum time (in seconds) that should pass without communication between the client and the server"
       annotation(Dialog(group="Server connection", tab="Advanced"));
     parameter Integer connectTimeout = 30 "Connection timeout (in seconds)"
       annotation(Dialog(group="Server connection", tab="Advanced"));
-    parameter Integer disconnectTimeout = 10 "Disconnection timeout (in seconds)"
+    parameter Integer disconnectTimeout = 10
+      "Disconnection timeout (in seconds)"
       annotation(Dialog(group="Server connection", tab="Advanced"));
-    parameter Boolean cleanSession = true "=true, if session state at connect and disconnect is to be discarded"
+    parameter Boolean cleanSession = true
+      "=true, if session state at connect and disconnect is to be discarded"
       annotation(Dialog(group="Server connection", tab="Advanced", enable=protocolVersion<>MQTTVersion.V5), choices(checkBox=true));
-    parameter Boolean reliable = true "=true, if a published message must be completed (acknowledgements received) before another message can be sent"
+    parameter Boolean reliable = true
+      "=true, if a published message must be completed (acknowledgements received) before another message can be sent"
       annotation(Dialog(group="Server connection", tab="Advanced"), choices(checkBox=true));
-    parameter String userName = "" "User name for authentication and authorisation"
+    parameter String userName = ""
+      "User name for authentication and authorisation"
       annotation(Dialog(group="Server connection", tab="Advanced", enable=protocolVersion<>MQTTVersion.V31));
-    parameter String password = "" "Password for authentication and authorisation"
+    parameter String password = ""
+      "Password for authentication and authorisation"
       annotation(Dialog(group="Server connection", tab="Advanced", enable=protocolVersion<>MQTTVersion.V31));
-    parameter Boolean certAuth = true "=true, if verification of the server certificate is enabled"
+    parameter Boolean certAuth = true
+      "=true, if verification of the server certificate is enabled"
       annotation(Dialog(group="Transport Layer Security", tab="Advanced", enable=provider==MQTTProvider.SSL or provider==MQTTProvider.WSS), choices(checkBox=true));
-    parameter Boolean verify = false "=true, if post-connect checks are enabled"
+    parameter Boolean verify = false
+      "=true, if post-connect checks are enabled"
       annotation(Dialog(group="Transport Layer Security", tab="Advanced", enable=provider==MQTTProvider.SSL or provider==MQTTProvider.WSS), choices(checkBox=true));
     parameter TLSVersion sslVersion = TLSVersion.DEFAULT "SSL/TLS version"
       annotation(Dialog(group="Transport Layer Security", tab="Advanced", enable=provider==MQTTProvider.SSL or provider==MQTTProvider.WSS));
-    parameter String trustStore = "" "Public digital certificates trusted by the client"
+    parameter String trustStore = ""
+      "Public digital certificates trusted by the client"
       annotation(Dialog(group="Transport Layer Security", tab="Advanced", enable=provider==MQTTProvider.SSL or provider==MQTTProvider.WSS,
         loadSelector(filter="Certificate files (*.cer;*.cert;*.crt;*.pem)",
         caption="Open file")));
-    parameter String keyStore = "" "Public certificate chain of the client (may also include the private key of the client)"
+    parameter String keyStore = ""
+      "Public certificate chain of the client (may also include the private key of the client)"
       annotation(Dialog(group="Transport Layer Security", tab="Advanced", enable=provider==MQTTProvider.SSL or provider==MQTTProvider.WSS,
         loadSelector(filter="Certificate files (*.cer;*.cert;*.crt;*.pem)",
         caption="Open file")));
-    parameter String privateKey = "" "Private key of the client (may be empty if already included in the keyStore)"
+    parameter String privateKey = ""
+      "Private key of the client (may be empty if already included in the keyStore)"
       annotation(Dialog(group="Transport Layer Security", tab="Advanced", enable=provider==MQTTProvider.SSL or provider==MQTTProvider.WSS,
         loadSelector(filter="Certificate files (*.key;*.pem)",
         caption="Open file")));
-    parameter MQTTTracing traceLevel = MQTTTracing.DEFAULT "MQTT client tracing"
+    parameter MQTTTracing traceLevel = MQTTTracing.DEFAULT
+      "MQTT client tracing"
       annotation(Dialog(group="Tracing", tab="Advanced"));
     Interfaces.PackageOut pkgOut(pkg = SerialPackager(if autoBufferSize then bufferSize else userBufferSize), dummy(start=0, fixed=true))
       annotation (Placement(transformation(
@@ -589,7 +613,8 @@ sudo route add -net 224.0.0.0 netmask 240.0.0.0 dev lo
       if protocolVersion<>MQTTVersion.V5 then cleanSession else false, reliable, connectTimeout,
       if protocolVersion == MQTTVersion.V5 then 5 else if protocolVersion == MQTTVersion.V311 then 4 else if protocolVersion == MQTTVersion.V31 then 3 else 0, disconnectTimeout, certAuth, verify,
       if sslVersion == TLSVersion.V12 then 3 else if sslVersion == TLSVersion.V11 then 2 else if sslVersion == TLSVersion.V10 then 1 else 0,
-      if traceLevel == MQTTTracing.FATAL then 7 else if traceLevel == MQTTTracing.SEVERE then 6 else if traceLevel == MQTTTracing.ERROR then 5 else if traceLevel == MQTTTracing.PROTOCOL then 4 else if traceLevel == MQTTTracing.MINIMUM then 3 else if traceLevel == MQTTTracing.MEDIUM then 2 else if traceLevel == MQTTTracing.MAXIMUM then 1 else 0) "MQTT external object";
+      if traceLevel == MQTTTracing.FATAL then 7 else if traceLevel == MQTTTracing.SEVERE then 6 else if traceLevel == MQTTTracing.ERROR then 5 else if traceLevel == MQTTTracing.PROTOCOL then 4 else if traceLevel == MQTTTracing.MINIMUM then 3 else if traceLevel == MQTTTracing.MEDIUM then 2 else if traceLevel == MQTTTracing.MAXIMUM then 1 else 0)
+      "MQTT external object";
   equation
     when initial() then
       bufferSize = if autoBufferSize then alignAtByteBoundary(pkgOut.autoPkgBitSize) else userBufferSize;
@@ -630,7 +655,8 @@ sudo route add -net 224.0.0.0 netmask 240.0.0.0 dev lo
       "Buffer size of message data in bytes (if not deduced automatically)." annotation(Dialog(enable=not autoBufferSize, group="Outgoing data"));
     parameter MQTTProvider provider = MQTTProvider.TCP "MQTT network protocol"
       annotation(Dialog(group="Outgoing data", groupImage="modelica://Modelica_DeviceDrivers/Resources/Images/pahologo.png"));
-    parameter MQTTVersion protocolVersion = MQTTVersion.DEFAULT "MQTT network protocol version"
+    parameter MQTTVersion protocolVersion = MQTTVersion.DEFAULT
+      "MQTT network protocol version"
       annotation(Dialog(group="Outgoing data"));
     parameter String address = "localhost" "IP address"
       annotation(Dialog(group="Outgoing data"));
@@ -639,46 +665,61 @@ sudo route add -net 224.0.0.0 netmask 240.0.0.0 dev lo
     parameter String channel_send = "" "Channel name"
       annotation(Dialog(group="Outgoing data"));
     parameter Integer QoS(min=0, max=2) = 1 "Quality of service"
-      annotation(Dialog(group="Outgoing data"), choices(choice=0 "At most once", choice=1 "At least once", choice=2 "Exactly once"));
+      annotation(Dialog(group="Outgoing data"), choices(choice=0 "At most once", choice=1
+          "At least once",                                                                                 choice=2
+          "Exactly once"));
     parameter Integer deliveryTimeout = 10 "Delivery timeout (in seconds)"
       annotation(Dialog(group="Outgoing data", enable=QoS>0));
     parameter Boolean retained = false "Retained flag"
       annotation(Dialog(group="Outgoing data"), choices(checkBox=true));
-    parameter String clientID = "send-" + getMACAddress() "Unique client identifier"
+    parameter String clientID = "send-" + getMACAddress()
+      "Unique client identifier"
       annotation(Dialog(group="Server connection", tab="Advanced"));
-    parameter Integer keepAliveInterval = 60 "Maximum time (in seconds) that should pass without communication between the client and the server"
+    parameter Integer keepAliveInterval = 60
+      "Maximum time (in seconds) that should pass without communication between the client and the server"
       annotation(Dialog(group="Server connection", tab="Advanced"));
     parameter Integer connectTimeout = 30 "Connection timeout (in seconds)"
       annotation(Dialog(group="Server connection", tab="Advanced"));
-    parameter Integer disconnectTimeout = 10 "Disconnection timeout (in seconds)"
+    parameter Integer disconnectTimeout = 10
+      "Disconnection timeout (in seconds)"
       annotation(Dialog(group="Server connection", tab="Advanced"));
-    parameter Boolean cleanSession = true "=true, if session state at connect and disconnect is to be discarded"
+    parameter Boolean cleanSession = true
+      "=true, if session state at connect and disconnect is to be discarded"
       annotation(Dialog(group="Server connection", tab="Advanced", enable=protocolVersion<>MQTTVersion.V5), choices(checkBox=true));
-    parameter Boolean reliable = true "=true, if a published message must be completed (acknowledgements received) before another message can be sent"
+    parameter Boolean reliable = true
+      "=true, if a published message must be completed (acknowledgements received) before another message can be sent"
       annotation(Dialog(group="Server connection", tab="Advanced"), choices(checkBox=true));
-    parameter String userName = "" "User name for authentication and authorisation"
+    parameter String userName = ""
+      "User name for authentication and authorisation"
       annotation(Dialog(group="Server connection", tab="Advanced", enable=protocolVersion<>MQTTVersion.V31));
-    parameter String password = "" "Password for authentication and authorisation"
+    parameter String password = ""
+      "Password for authentication and authorisation"
       annotation(Dialog(group="Server connection", tab="Advanced", enable=protocolVersion<>MQTTVersion.V31));
-    parameter Boolean certAuth = true "=true, if verification of the server certificate is enabled"
+    parameter Boolean certAuth = true
+      "=true, if verification of the server certificate is enabled"
       annotation(Dialog(group="Transport Layer Security", tab="Advanced", enable=provider==MQTTProvider.SSL or provider==MQTTProvider.WSS), choices(checkBox=true));
-    parameter Boolean verify = false "=true, if post-connect checks are enabled"
+    parameter Boolean verify = false
+      "=true, if post-connect checks are enabled"
       annotation(Dialog(group="Transport Layer Security", tab="Advanced", enable=provider==MQTTProvider.SSL or provider==MQTTProvider.WSS), choices(checkBox=true));
     parameter TLSVersion sslVersion = TLSVersion.DEFAULT "SSL/TLS version"
       annotation(Dialog(group="Transport Layer Security", tab="Advanced", enable=provider==MQTTProvider.SSL or provider==MQTTProvider.WSS));
-    parameter String trustStore = "" "Public digital certificates trusted by the client"
+    parameter String trustStore = ""
+      "Public digital certificates trusted by the client"
       annotation(Dialog(group="Transport Layer Security", tab="Advanced", enable=provider==MQTTProvider.SSL or provider==MQTTProvider.WSS,
         loadSelector(filter="Certificate files (*.cer;*.cert;*.crt;*.pem)",
         caption="Open file")));
-    parameter String keyStore = "" "Public certificate chain of the client (may also include the private key of the client)"
+    parameter String keyStore = ""
+      "Public certificate chain of the client (may also include the private key of the client)"
       annotation(Dialog(group="Transport Layer Security", tab="Advanced", enable=provider==MQTTProvider.SSL or provider==MQTTProvider.WSS,
         loadSelector(filter="Certificate files (*.cer;*.cert;*.crt;*.pem)",
         caption="Open file")));
-    parameter String privateKey = "" "Private key of the client (may be empty if already included in the keyStore)"
+    parameter String privateKey = ""
+      "Private key of the client (may be empty if already included in the keyStore)"
       annotation(Dialog(group="Transport Layer Security", tab="Advanced", enable=provider==MQTTProvider.SSL or provider==MQTTProvider.WSS,
         loadSelector(filter="Certificate files (*.key;*.pem)",
         caption="Open file")));
-    parameter MQTTTracing traceLevel = MQTTTracing.DEFAULT "MQTT client tracing"
+    parameter MQTTTracing traceLevel = MQTTTracing.DEFAULT
+      "MQTT client tracing"
       annotation(Dialog(group="Tracing", tab="Advanced"));
     Interfaces.PackageIn pkgIn annotation (Placement(transformation(
           extent={{-20,-20},{20,20}},
@@ -694,7 +735,8 @@ sudo route add -net 224.0.0.0 netmask 240.0.0.0 dev lo
       if protocolVersion<>MQTTVersion.V5 then cleanSession else false, reliable, connectTimeout,
       if protocolVersion == MQTTVersion.V5 then 5 else if protocolVersion == MQTTVersion.V311 then 4 else if protocolVersion == MQTTVersion.V31 then 3 else 0, disconnectTimeout, certAuth, verify,
       if sslVersion == TLSVersion.V12 then 3 else if sslVersion == TLSVersion.V11 then 2 else if sslVersion == TLSVersion.V10 then 1 else 0,
-      if traceLevel == MQTTTracing.FATAL then 7 else if traceLevel == MQTTTracing.SEVERE then 6 else if traceLevel == MQTTTracing.ERROR then 5 else if traceLevel == MQTTTracing.PROTOCOL then 4 else if traceLevel == MQTTTracing.MINIMUM then 3 else if traceLevel == MQTTTracing.MEDIUM then 2 else if traceLevel == MQTTTracing.MAXIMUM then 1 else 0) "MQTT external object";
+      if traceLevel == MQTTTracing.FATAL then 7 else if traceLevel == MQTTTracing.SEVERE then 6 else if traceLevel == MQTTTracing.ERROR then 5 else if traceLevel == MQTTTracing.PROTOCOL then 4 else if traceLevel == MQTTTracing.MINIMUM then 3 else if traceLevel == MQTTTracing.MEDIUM then 2 else if traceLevel == MQTTTracing.MAXIMUM then 1 else 0)
+      "MQTT external object";
   equation
     when initial() then
       pkgIn.userPkgBitSize = if autoBufferSize then -1 else userBufferSize*8;
@@ -1329,4 +1371,12 @@ See <a href=\"modelica://Modelica_DeviceDrivers.Blocks.Examples.TestSerialPackag
       /* "actTrigger" can now be used by extending classes to trigger calls to I/O devices */
     end PartialSampleTrigger;
   end Internal;
+
+  block OPC_UA_Server "A block for Setting up an OPC UA Server"
+    import Modelica_DeviceDrivers.Communication.OPC_UA_Server;
+
+    OPC_UA_Server server = OPC_UA_Server();
+  equation
+
+  end OPC_UA_Server;
 end Communication;
