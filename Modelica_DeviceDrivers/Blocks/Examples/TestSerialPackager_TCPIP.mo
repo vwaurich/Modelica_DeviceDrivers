@@ -25,6 +25,8 @@ model TestSerialPackager_TCPIP
     nu=1,
     n=2) annotation(Placement(transformation(extent={{30,-18},{50,2}})));
   Modelica.Blocks.Sources.RealExpression realExpression1[2](y=sin(time)*{1,2}) annotation(Placement(transformation(extent={{-78,2},{-58,22}})));
+  OperatingSystem.RealtimeSynchronize realtimeSynchronize
+    annotation (Placement(transformation(extent={{-100,60},{-80,80}})));
 equation
     connect(integerExpression.y, addInteger.u[1]) annotation (Line(
         points={{-59,-16},{-42,-16}},
@@ -46,9 +48,9 @@ equation
     connect(getInteger.pkgIn, getFloat.pkgOut[1]) annotation (Line(
         points={{40,-27.2},{40,-18.8}}));
  connect(tcpipClient.pkgOut,getReal.pkgIn) annotation(Line(
-  points={{5,15.7},{5,20.7},{5,35.7},{40,35.7},{40,30.7}}));
+  points={{5,15.8},{5,15.8},{5,35.7},{40,35.7},{40,30.8}}));
  connect(addInteger.pkgOut[1],tcpipClient.pkgIn) annotation(Line(
-  points={{-30,-26.7},{-30,-31.7},{5,-31.7},{5,-10.7},{5,-5.7}}));
+  points={{-30,-26.8},{-30,-31.7},{5,-31.7},{5,-5.8}}));
   annotation (
     Documentation(info="<html>
 <p>
