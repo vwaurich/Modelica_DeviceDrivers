@@ -2,6 +2,8 @@
 
 
 static volatile UA_Boolean running = true;
+static volatile UA_StatusCode status = 0;
+
 static void stopHandler(int sig) {
 	UA_LOG_INFO(UA_Log_Stdout, UA_LOGCATEGORY_USERLAND, "received ctrl-c");
 	running = false;
@@ -29,7 +31,7 @@ void deleteOPCUAserver(void* opcua)
 {
 	UA_Server *server = (UA_Server*)opcua;
 	running = false;
-	UA_Server_delete(server);
+	//UA_Server_delete(server);  // sometimes, this makes the pocess crash
 }
 
 void addIntVariable(void * opcua,  char * name, int value)
@@ -47,7 +49,6 @@ void addIntVariable(void * opcua,  char * name, int value)
 
 
 	/* Add the variable node to the information model */
-	
 	UA_NodeId myIntegerNodeId = UA_NODEID_STRING(1, name);
 	UA_QualifiedName myIntegerName = UA_QUALIFIEDNAME(1, name);
 	UA_NodeId parentNodeId = UA_NODEID_NUMERIC(0, UA_NS0ID_OBJECTSFOLDER);
@@ -55,5 +56,37 @@ void addIntVariable(void * opcua,  char * name, int value)
 	UA_Server_addVariableNode(server, myIntegerNodeId, parentNodeId,
 		parentReferenceNodeId, myIntegerName,
 		UA_NODEID_NUMERIC(0, UA_NS0ID_BASEDATAVARIABLETYPE), attr, NULL, NULL);
+}
+
+void writeIntVariable(void * opcua, char * name, int value)
+{
+	UA_Server *server = (UA_Server*)opcua;
+
+	UA_NodeId myIntegerNodeId = UA_NODEID_STRING(1, name);
+
+	/* Write a different integer value */
+	UA_Int32 myInteger = value;
+	UA_Variant myVar;
+	UA_Variant_init(&myVar);
+	UA_Variant_setScalar(&myVar, &myInteger, &UA_TYPES[UA_TYPES_INT32]);
+	UA_StatusCode sc = UA_Server_writeValue(server, myIntegerNodeId, myVar);
+
+	///* Set the status code of the value to an error code. The function
+	//* UA_Server_write provides access to the raw service. The above
+	//* UA_Server_writeValue is syntactic sugar for writing a specific node
+	//* attribute with the write service. */
+	//UA_WriteValue wv;
+	//UA_WriteValue_init(&wv);
+	//wv.nodeId = myIntegerNodeId;
+	//wv.attributeId = UA_ATTRIBUTEID_VALUE;
+	//wv.value.status = UA_STATUSCODE_BADNOTCONNECTED;
+	//wv.value.hasStatus = true;
+	//UA_Server_write(server, &wv);
+	//
+	///* Reset the variable to a good statuscode with a value */
+	//wv.value.hasStatus = false;
+	//wv.value.value = myVar;
+	//wv.value.hasValue = true;
+	//UA_Server_write(server, &wv);
 }
 

@@ -15,4 +15,20 @@ package OPC_UA_Server_
         __iti_dll = "ITI_MDDMQTT.dll",
         __iti_dllNoExport = true);
   end addIntVar;
+
+  encapsulated function writeIntVar
+    import Modelica;
+    import Modelica_DeviceDrivers.Communication.OPC_UA_Server;
+    extends Modelica.Icons.Function;
+    input OPC_UA_Server opcua;
+    input String nodeName;
+    input Integer intVal;
+    output Integer outVal;
+    external "C" outVal=  MDD_opcuaWriteIntVar(opcua, nodeName, intVal)
+      annotation (
+        Include = "#include \"MDDMQTT.h\"",
+        Library = {"pthread"},
+        __iti_dll = "ITI_MDDMQTT.dll",
+        __iti_dllNoExport = true);
+  end writeIntVar;
 end OPC_UA_Server_;
