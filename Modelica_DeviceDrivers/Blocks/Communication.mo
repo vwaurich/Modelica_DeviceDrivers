@@ -1604,11 +1604,36 @@ TCP/IP server configuration block. This block is supposed to be used as an inner
     extends Modelica_DeviceDrivers.Utilities.Icons.BaseIcon;
     Modelica_DeviceDrivers.Communication.OPC_UA_Server server = Modelica_DeviceDrivers.Communication.OPC_UA_Server();
 
+    Modelica_DeviceDrivers.Blocks.Interfaces.OPC_UA_ServerConnectorOut
+      oPC_UA_ServerConnectorOut    annotation (Placement(transformation(extent={{92,-10},{112,10}})));
+
+  algorithm
+    oPC_UA_ServerConnectorOut.server := server;
     annotation (preferredView="info",
             Icon(coordinateSystem(preserveAspectRatio=true, extent={{-100,
               -100},{100,100}}), graphics={Text(extent={{-150,136},{150,96}},
               textString="%name")}), Documentation(info="<html>
             <p>OPC-UA Server</p>
-</html>"));
+</html>"),
+      Diagram(coordinateSystem(preserveAspectRatio=false, extent={{-100,-100},{100,
+              100}}), graphics));
   end OPC_UA_Server;
+
+  model OPC_UA_addIntNode
+    extends Modelica_DeviceDrivers.Utilities.Icons.BaseIcon;
+    extends
+      Modelica_DeviceDrivers.Blocks.Communication.Internal.PartialSampleTrigger;
+
+    parameter String nodeName = "testNodeName";
+
+    Modelica.Blocks.Interfaces.IntegerInput intVarIn
+      annotation (Placement(transformation(extent={{-124,-20},{-84,20}})));
+    Modelica_DeviceDrivers.Blocks.Interfaces.OPC_UA_ServerConnectorIn oPC_UA_ServerConnectorIn    annotation (Placement(transformation(extent={{92,-10},{112,10}})));
+    Modelica_DeviceDrivers.Communication.OPC_UA_Server server = oPC_UA_ServerConnectorIn.server;
+  initial equation
+      Modelica_DeviceDrivers.Communication.OPC_UA_Server_.addIntVar(server,nodeName,intVarIn);
+
+    annotation (Diagram(coordinateSystem(preserveAspectRatio=false, extent={{-100,
+              -100},{100,100}}), graphics));
+  end OPC_UA_addIntNode;
 end Communication;

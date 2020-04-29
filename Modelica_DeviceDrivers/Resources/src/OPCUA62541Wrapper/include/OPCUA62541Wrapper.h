@@ -14,5 +14,6 @@
 #endif
 
 LIB_API void* createOPCUAserver();
-LIB_API int startOPCUAserver(void* vp_server);
-LIB_API void deleteOPCUAserver(void* vp_server);
+LIB_API int startOPCUAserver(void* opcua);
+LIB_API void deleteOPCUAserver(void* opcua);
+LIB_API void addIntVariable(void* opcua, char* name, int value);

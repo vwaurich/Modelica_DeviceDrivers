@@ -6,10 +6,9 @@ package OPC_UA_Server_
     import Modelica_DeviceDrivers.Communication.OPC_UA_Server;
     extends Modelica.Icons.Function;
     input OPC_UA_Server opcua;
-    input Integer nodeID;
     input String nodeName;
     input Integer intVal;
-    external "C" MDD_opcuaAddIntVar(opcua, nodeID, intVal)
+    external "C" MDD_opcuaAddIntVar(opcua, nodeName, intVal)
       annotation (
         Include = "#include \"MDDMQTT.h\"",
         Library = {"pthread"},
