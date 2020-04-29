@@ -1605,7 +1605,8 @@ TCP/IP server configuration block. This block is supposed to be used as an inner
     Modelica_DeviceDrivers.Communication.OPC_UA_Server server = Modelica_DeviceDrivers.Communication.OPC_UA_Server();
 
     Modelica_DeviceDrivers.Blocks.Interfaces.OPC_UA_ServerConnectorOut
-      oPC_UA_ServerConnectorOut    annotation (Placement(transformation(extent={{92,-10},{112,10}})));
+      oPC_UA_ServerConnectorOut    annotation (Placement(transformation(extent={{-10,
+              -108},{10,-88}})));
 
   algorithm
     oPC_UA_ServerConnectorOut.server := server;
@@ -1617,8 +1618,9 @@ TCP/IP server configuration block. This block is supposed to be used as an inner
                                      Documentation(info="<html>
             <p>OPC-UA Server</p>
 </html>"),
-      Diagram(coordinateSystem(preserveAspectRatio=false, extent={{-100,-100},{100,
-              100}}), graphics));
+      Diagram(coordinateSystem(preserveAspectRatio=false, extent={{-100,-100},{
+              100,100}}),
+                      graphics));
   end OPC_UA_Server;
 
   model OPC_UA_addIntNode
@@ -1627,9 +1629,6 @@ TCP/IP server configuration block. This block is supposed to be used as an inner
       Modelica_DeviceDrivers.Blocks.Communication.Internal.PartialSampleTrigger;
 
     parameter String nodeName = "aloha";
-    Real test;
-    discrete Integer i1;
-    discrete Integer i2;
     Modelica.Blocks.Interfaces.IntegerInput intVarIn
       annotation (Placement(transformation(extent={{-124,-20},{-84,20}})));
     Modelica_DeviceDrivers.Blocks.Interfaces.OPC_UA_ServerConnectorIn oPC_UA_ServerConnectorIn    annotation (Placement(transformation(extent={{92,-10},{112,10}})));
@@ -1640,14 +1639,35 @@ TCP/IP server configuration block. This block is supposed to be used as an inner
   equation
 
     when actTrigger then
-      test=intVarIn+time;
-      i2 = integer(intVarIn);
-      i1 =  Modelica_DeviceDrivers.Communication.OPC_UA_Server_.writeIntVar(server,nodeName,intVarIn);
+      Modelica_DeviceDrivers.Communication.OPC_UA_Server_.writeIntVar(server,nodeName,intVarIn);
     end when;
     annotation (Diagram(coordinateSystem(preserveAspectRatio=false, extent={{-100,
               -100},{100,100}}), graphics), Icon(coordinateSystem(
-            preserveAspectRatio=false, extent={{-100,-100},{100,100}}),
-          graphics={Bitmap(extent={{-70,50},{70,-60}}, fileName=
-                "modelica://Modelica_DeviceDrivers/Resources/Images/open62541.png")}));
+            preserveAspectRatio=false, extent={{-100,-100},{100,100}}), graphics={
+            Bitmap(extent={{-70,50},{70,-60}}, fileName="modelica://Modelica_DeviceDrivers/Resources/Images/open62541.png")}));
   end OPC_UA_addIntNode;
+
+  model OPC_UA_addRealNode
+    extends Modelica_DeviceDrivers.Utilities.Icons.BaseIcon;
+    extends
+      Modelica_DeviceDrivers.Blocks.Communication.Internal.PartialSampleTrigger;
+
+    parameter String nodeName = "realNode";
+    Modelica.Blocks.Interfaces.RealInput realVarIn
+      annotation (Placement(transformation(extent={{-124,-20},{-84,20}})));
+    Modelica_DeviceDrivers.Blocks.Interfaces.OPC_UA_ServerConnectorIn oPC_UA_ServerConnectorIn    annotation (Placement(transformation(extent={{92,-10},{112,10}})));
+    Modelica_DeviceDrivers.Communication.OPC_UA_Server server = oPC_UA_ServerConnectorIn.server;
+  initial equation
+      Modelica_DeviceDrivers.Communication.OPC_UA_Server_.addRealVar(server,nodeName,realVarIn);
+
+  equation
+
+    when actTrigger then
+      Modelica_DeviceDrivers.Communication.OPC_UA_Server_.writeRealVar(server,nodeName,realVarIn);
+    end when;
+    annotation (Diagram(coordinateSystem(preserveAspectRatio=false, extent={{-100,
+              -100},{100,100}}), graphics), Icon(coordinateSystem(
+            preserveAspectRatio=false, extent={{-100,-100},{100,100}}), graphics={
+            Bitmap(extent={{-70,50},{70,-60}}, fileName="modelica://Modelica_DeviceDrivers/Resources/Images/open62541.png")}));
+  end OPC_UA_addRealNode;
 end Communication;

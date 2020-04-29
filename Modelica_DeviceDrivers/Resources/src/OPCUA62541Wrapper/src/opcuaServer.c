@@ -58,6 +58,29 @@ void addIntVariable(void * opcua,  char * name, int value)
 		UA_NODEID_NUMERIC(0, UA_NS0ID_BASEDATAVARIABLETYPE), attr, NULL, NULL);
 }
 
+void addDoubleVariable(void * opcua, char * name, double value)
+{
+	UA_Server *server = (UA_Server*)opcua;
+
+	/* Define the attribute of the int variable node */
+	UA_VariableAttributes attr = UA_VariableAttributes_default;
+	UA_Double myDouble = value;
+	UA_Variant_setScalar(&attr.value, &myDouble, &UA_TYPES[UA_TYPES_DOUBLE]);
+	attr.description = UA_LOCALIZEDTEXT("en-US", name);
+	attr.displayName = UA_LOCALIZEDTEXT("en-US", name);
+	attr.dataType = UA_TYPES[UA_TYPES_DOUBLE].typeId;
+	attr.accessLevel = UA_ACCESSLEVELMASK_READ | UA_ACCESSLEVELMASK_WRITE;
+
+	/* Add the variable node to the information model */
+	UA_NodeId myDoubleNodeId = UA_NODEID_STRING(1, name);
+	UA_QualifiedName myDoubleName = UA_QUALIFIEDNAME(1, name);
+	UA_NodeId parentNodeId = UA_NODEID_NUMERIC(0, UA_NS0ID_OBJECTSFOLDER);
+	UA_NodeId parentReferenceNodeId = UA_NODEID_NUMERIC(0, UA_NS0ID_ORGANIZES);
+	UA_Server_addVariableNode(server, myDoubleNodeId, parentNodeId,
+		parentReferenceNodeId, myDoubleName,
+		UA_NODEID_NUMERIC(0, UA_NS0ID_BASEDATAVARIABLETYPE), attr, NULL, NULL);
+}
+
 void writeIntVariable(void * opcua, char * name, int value)
 {
 	UA_Server *server = (UA_Server*)opcua;
@@ -69,7 +92,7 @@ void writeIntVariable(void * opcua, char * name, int value)
 	UA_Variant myVar;
 	UA_Variant_init(&myVar);
 	UA_Variant_setScalar(&myVar, &myInteger, &UA_TYPES[UA_TYPES_INT32]);
-	UA_StatusCode sc = UA_Server_writeValue(server, myIntegerNodeId, myVar);
+	UA_Server_writeValue(server, myIntegerNodeId, myVar);
 
 	///* Set the status code of the value to an error code. The function
 	//* UA_Server_write provides access to the raw service. The above
@@ -90,3 +113,16 @@ void writeIntVariable(void * opcua, char * name, int value)
 	//UA_Server_write(server, &wv);
 }
 
+void writeDoubleVariable(void * opcua, char * name, double value)
+{
+	UA_Server *server = (UA_Server*)opcua;
+
+	UA_NodeId myDoubleNodeId = UA_NODEID_STRING(1, name);
+
+	/* Write a different integer value */
+	UA_Double myDouble = value;
+	UA_Variant myVar;
+	UA_Variant_init(&myVar);
+	UA_Variant_setScalar(&myVar, &myDouble, &UA_TYPES[UA_TYPES_DOUBLE]);
+	UA_StatusCode sc = UA_Server_writeValue(server, myDoubleNodeId, myVar);
+}

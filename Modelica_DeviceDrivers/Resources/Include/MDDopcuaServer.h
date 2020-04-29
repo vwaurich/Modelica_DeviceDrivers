@@ -95,12 +95,24 @@ DllExport void MDD_opcuaAddIntVar(void* p_opcua, char* nodeName, int value)
 	addIntVariable(opcua->server, nodeName, value);
 }
 
-DllExport int MDD_opcuaWriteIntVar(void* p_opcua, char* nodeName, int value)
+DllExport void MDD_opcuaWriteIntVar(void* p_opcua, char* nodeName, int value)
 {
 	MDDopcuaServer * opcua = (MDDopcuaServer *) p_opcua;
 	//ModelicaFormatMessage("MDDopcuaServer.h: Write %s to %d.\n",nodeName, value);
 	writeIntVariable(opcua->server, nodeName, value);
-	return value;
+}
+
+DllExport void MDD_opcuaAddRealVar(void* p_opcua, char* nodeName, double value)
+{
+	MDDopcuaServer * opcua = (MDDopcuaServer *) p_opcua;
+	addDoubleVariable(opcua->server, nodeName, value);
+}
+
+DllExport void MDD_opcuaWriteRealVar(void* p_opcua, char* nodeName, double value)
+{
+	MDDopcuaServer * opcua = (MDDopcuaServer *) p_opcua;
+	//ModelicaFormatMessage("MDDopcuaServer.h: Write %s to %d.\n",nodeName, value);
+	writeDoubleVariable(opcua->server, nodeName, value);
 }
 
 #else
