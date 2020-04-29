@@ -30,7 +30,7 @@ DWORD WINAPI MDD_OPCUAServerThread(LPVOID p_opcua) {
 	int r;
     MDDopcuaServer * opcua = (MDDopcuaServer *) p_opcua;
 	ModelicaFormatMessage("Create server in thread\n");
-	r = startOPCUAserver(opcua->server,&opcua->running);
+	r = startOPCUAserver(opcua->server);
 	ModelicaFormatMessage("Started opc ua server %d\n",r);
 
     return 0;
@@ -53,7 +53,7 @@ DllExport void * MDD_opcuaServerConstructor()
 
     opcua = (MDDopcuaServer *)calloc(sizeof(MDDopcuaServer), 1);
 	
-	//opcua->server = createOPCUAserver();
+	opcua->server = createOPCUAserver();
 	ModelicaFormatMessage("Create server \n");
 	
 	InitializeCriticalSection(&opcua->receiveLock);
@@ -123,30 +123,23 @@ DllExport void * MDD_opcuaServerConstructor()
 DllExport void MDD_opcuaServerDestructor(void * p_opcua) 
 {
     MDDopcuaServer * opcua = (MDDopcuaServer *) p_opcua;
-	        ModelicaFormatMessage("Destroy\n");
 
-	//deleteOPCUAserver(opcua->server, &opcua->running);
-
-	/* 
-    if (udp) {
-        udp->receiving = 0;
-        rc = shutdown(udp->SocketID, 2);
-        if (rc == SOCKET_ERROR) {
-            ModelicaFormatMessage("MDDUDPSocket.h: shutdown failed with error code: %d\n", WSAGetLastError());
-        }
-        closesocket(udp->SocketID);
-        if (udp->useReceiveThread && udp->hThread) {
+    if (opcua) {
+        deleteOPCUAserver(opcua->server);
+		ModelicaMessage("MDDopcuaServer.h: Delete OPC UA Server.\n");
+        if (opcua->hThread) {
             DWORD dwEc = 1;
-            WaitForSingleObject(udp->hThread, 1000);
-            if (GetExitCodeThread(udp->hThread, &dwEc) && dwEc == STILL_ACTIVE) {
-                TerminateThread(udp->hThread, 1);
+
+            if (GetExitCodeThread(opcua->hThread, &dwEc) && dwEc == STILL_ACTIVE) 
+			{
+                TerminateThread(opcua->hThread, 1);
+				ModelicaMessage("MDDopcuaServer.h: Close Thread.\n");
             }
-            CloseHandle(udp->hThread);
-            DeleteCriticalSection(&udp->receiveLock);
-            free(udp->receiveBuffer);
+            CloseHandle(opcua->hThread);
+            DeleteCriticalSection(&opcua->receiveLock);
         }
-        free(udp);
-    } */
+        free(opcua);
+    }
     WSACleanup();
 }
 

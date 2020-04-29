@@ -16,29 +16,16 @@ void* createOPCUAserver()
 
 int startOPCUAserver(void* opcua)
 {
-	//UA_Server *server = (UA_Server*)opcua;
-	//UA_Boolean run = (UA_Boolean) running;
-	//UA_StatusCode retval = UA_Server_run(server, run);
-
-	signal(SIGINT, stopHandler);
-	signal(SIGTERM, stopHandler);
-
-	UA_Server *server = UA_Server_new();
-	UA_ServerConfig_setDefault(UA_Server_getConfig(server));
-
+	UA_Server *server = (UA_Server*)opcua;
 	UA_StatusCode retval = UA_Server_run(server, &running);
-
 	UA_Server_delete(server);
-
-
-	return 4;
+	return retval;
 }
 
 void deleteOPCUAserver(void* opcua)
 {
 	UA_Server *server = (UA_Server*)opcua;
-	UA_Boolean* run = (UA_Boolean*)running;
-	run = false;
+	running = false;
 	UA_Server_delete(server);
 }
 
