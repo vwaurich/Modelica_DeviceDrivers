@@ -14,6 +14,5 @@
 #endif
 
 LIB_API void* createOPCUAserver();
-LIB_API int startOPCUAserver(void* vp_server, unsigned char* running);
-LIB_API void deleteOPCUAserver(void* vp_server, unsigned char* running);
-LIB_API void allInOne();
+LIB_API int startOPCUAserver(void* vp_server);
+LIB_API void deleteOPCUAserver(void* vp_server);

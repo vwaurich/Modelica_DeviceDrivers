@@ -14,24 +14,12 @@ void* createOPCUAserver()
 	return server;
 }
 
-int startOPCUAserver(void* opcua, unsigned char* running)
+int startOPCUAserver(void* opcua)
 {
-	UA_Server *server = (UA_Server*)opcua;
-	UA_Boolean run = (UA_Boolean) running;
-	UA_StatusCode retval = UA_Server_run(server, run);
-	return 4;
-}
+	//UA_Server *server = (UA_Server*)opcua;
+	//UA_Boolean run = (UA_Boolean) running;
+	//UA_StatusCode retval = UA_Server_run(server, run);
 
-void deleteOPCUAserver(void* opcua, unsigned char* running)
-{
-	UA_Server *server = (UA_Server*)opcua;
-	UA_Boolean* run = (UA_Boolean*)running;
-	run = false;
-	UA_Server_delete(server);
-}
-
-void allInOne()
-{
 	signal(SIGINT, stopHandler);
 	signal(SIGTERM, stopHandler);
 
@@ -41,4 +29,16 @@ void allInOne()
 	UA_StatusCode retval = UA_Server_run(server, &running);
 
 	UA_Server_delete(server);
+
+
+	return 4;
 }
+
+void deleteOPCUAserver(void* opcua)
+{
+	UA_Server *server = (UA_Server*)opcua;
+	UA_Boolean* run = (UA_Boolean*)running;
+	run = false;
+	UA_Server_delete(server);
+}
+

@@ -30,8 +30,7 @@ DWORD WINAPI MDD_OPCUAServerThread(LPVOID p_opcua) {
 	int r;
     MDDopcuaServer * opcua = (MDDopcuaServer *) p_opcua;
 	ModelicaFormatMessage("Create server in thread\n");
-	allInOne();
-	//r = startOPCUAserver(opcua->server,&opcua->running);
+	r = startOPCUAserver(opcua->server,&opcua->running);
 	ModelicaFormatMessage("Started opc ua server %d\n",r);
 
     return 0;
@@ -59,15 +58,15 @@ DllExport void * MDD_opcuaServerConstructor()
 	
 	InitializeCriticalSection(&opcua->receiveLock);
 	opcua->hThread = CreateThread(0, 1024, MDD_OPCUAServerThread, opcua, 0, &id1);
-            if (!opcua->hThread) {
-                DWORD dw = GetLastError();
-                deleteOPCUAserver(opcua->server,&opcua->running);
-                DeleteCriticalSection(&opcua->receiveLock);
-                free(opcua);
-                opcua = NULL;
-                WSACleanup();
-                ModelicaFormatError("MDDopcuaServer.h: Error creating opc ua thread: %lu\n", dw);
-            }
+	if (!opcua->hThread) {
+		DWORD dw = GetLastError();
+		deleteOPCUAserver(opcua->server,&opcua->running);
+		DeleteCriticalSection(&opcua->receiveLock);
+		free(opcua);
+		opcua = NULL;
+		WSACleanup();
+		ModelicaFormatError("MDDopcuaServer.h: Error creating opc ua thread: %lu\n", dw);
+	}
 
 
 	/*
@@ -126,7 +125,7 @@ DllExport void MDD_opcuaServerDestructor(void * p_opcua)
     MDDopcuaServer * opcua = (MDDopcuaServer *) p_opcua;
 	        ModelicaFormatMessage("Destroy\n");
 
-	deleteOPCUAserver(opcua->server, &opcua->running);
+	//deleteOPCUAserver(opcua->server, &opcua->running);
 
 	/* 
     if (udp) {
