@@ -13,9 +13,6 @@ void* createOPCUAserver()
 {
 	UA_Server *server = UA_Server_new();
 	UA_ServerConfig_setDefault(UA_Server_getConfig(server));
-
-	addIntVariable(server, "test", 123);
-
 	return server;
 }
 
