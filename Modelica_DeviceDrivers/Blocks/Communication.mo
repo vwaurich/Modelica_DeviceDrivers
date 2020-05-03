@@ -1408,8 +1408,7 @@ See <a href=\"modelica://Modelica_DeviceDrivers.Blocks.Examples.TestSerialPackag
     parameter Integer maxClients = 1
       "Maximum number of clients that can connect simultaneously";
     parameter Boolean useNonblockingMode = true
-      "=true, use non-blocking TCP/IP socket, otherwise receiving and sending will block"
-                                                                                                          annotation(Dialog(group="Advanced"), choices(checkBox=true));
+      "=true, use non-blocking TCP/IP socket, otherwise receiving and sending will block"                 annotation(Dialog(group="Advanced"), choices(checkBox=true));
     output Modelica_DeviceDrivers.Communication.TCPIPServer tcpipserver = Modelica_DeviceDrivers.Communication.TCPIPServer(port, maxClients, useNonblockingMode)
       "Device handle";
     annotation (
@@ -1632,12 +1631,12 @@ TCP/IP server configuration block. This block is supposed to be used as an inner
     Modelica.Blocks.Interfaces.IntegerInput intVarIn
       annotation (Placement(transformation(extent={{-124,-20},{-84,20}})));
     Modelica_DeviceDrivers.Blocks.Interfaces.OPC_UA_ServerConnectorIn oPC_UA_ServerConnectorIn    annotation (Placement(transformation(extent={{92,-10},{112,10}})));
-    Modelica_DeviceDrivers.Communication.OPC_UA_Server server = oPC_UA_ServerConnectorIn.server;
+    Modelica_DeviceDrivers.Communication.OPC_UA_Server server;
   initial equation
       Modelica_DeviceDrivers.Communication.OPC_UA_Server_.addIntVar(server,nodeName,intVarIn);
 
   equation
-
+    server = oPC_UA_ServerConnectorIn.server;
     when actTrigger then
       Modelica_DeviceDrivers.Communication.OPC_UA_Server_.writeIntVar(server,nodeName,intVarIn);
     end when;
@@ -1656,12 +1655,12 @@ TCP/IP server configuration block. This block is supposed to be used as an inner
     Modelica.Blocks.Interfaces.RealInput realVarIn
       annotation (Placement(transformation(extent={{-124,-20},{-84,20}})));
     Modelica_DeviceDrivers.Blocks.Interfaces.OPC_UA_ServerConnectorIn oPC_UA_ServerConnectorIn    annotation (Placement(transformation(extent={{92,-10},{112,10}})));
-    Modelica_DeviceDrivers.Communication.OPC_UA_Server server = oPC_UA_ServerConnectorIn.server;
+    Modelica_DeviceDrivers.Communication.OPC_UA_Server server;
   initial equation
       Modelica_DeviceDrivers.Communication.OPC_UA_Server_.addRealVar(server,nodeName,realVarIn);
 
   equation
-
+  server = oPC_UA_ServerConnectorIn.server;
     when actTrigger then
       Modelica_DeviceDrivers.Communication.OPC_UA_Server_.writeRealVar(server,nodeName,realVarIn);
     end when;
