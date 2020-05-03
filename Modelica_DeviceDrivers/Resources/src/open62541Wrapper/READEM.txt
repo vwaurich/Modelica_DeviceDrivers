@@ -1,0 +1,4 @@
+BUildig in msys
+cmake CMakeLists.txt -G "MSYS Makefiles" -Bbuildmingw64
+cd buildmingw64
+make

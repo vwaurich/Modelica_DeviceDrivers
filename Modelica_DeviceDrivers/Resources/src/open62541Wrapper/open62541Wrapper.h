@@ -1,9 +1,7 @@
 #ifdef _WIN32
 #    ifdef EXPORTLIB
 #        define LIB_API __declspec(dllexport)
-		#include <open62541/plugin/log_stdout.h>
-		#include <open62541/server.h>
-		#include <open62541/server_config_default.h>
+		#include "open62541.h"
 		#include <signal.h>
 		#include <stdlib.h>
 #    else

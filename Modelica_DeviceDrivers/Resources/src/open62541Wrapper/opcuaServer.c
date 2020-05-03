@@ -1,5 +1,5 @@
-#include "OPCUA62541Wrapper.h"
-
+#include "open62541Wrapper.h"
+#include "winsock2.h"
 
 static volatile UA_Boolean running = true;
 static volatile UA_StatusCode status = 0;
