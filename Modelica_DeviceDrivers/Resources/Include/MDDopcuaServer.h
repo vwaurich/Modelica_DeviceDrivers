@@ -12,7 +12,7 @@
 
 #include <winsock2.h>
 #include "../src/include/CompatibilityDefs.h"
-#include "../src/OPCUA62541Wrapper/include/OPCUA62541Wrapper.h"
+#include "../src/open62541Wrapper/open62541Wrapper.h"
 
 #pragma comment( lib, "Ws2_32.lib" )
 
@@ -56,7 +56,7 @@ DllExport void * MDD_opcuaServerConstructor()
 	opcua->hThread = CreateThread(0, 1024, MDD_OPCUAServerThread, opcua, 0, &id1);
 	if (!opcua->hThread) {
 		DWORD dw = GetLastError();
-		deleteOPCUAserver(opcua->server,&opcua->running);
+		deleteOPCUAserver(opcua->server);
 		DeleteCriticalSection(&opcua->receiveLock);
 		free(opcua);
 		opcua = NULL;
@@ -98,7 +98,7 @@ DllExport void MDD_opcuaAddIntVar(void* p_opcua, char* nodeName, int value)
 DllExport void MDD_opcuaWriteIntVar(void* p_opcua, char* nodeName, int value)
 {
 	MDDopcuaServer * opcua = (MDDopcuaServer *) p_opcua;
-	ModelicaFormatMessage("MDDopcuaServer.h: Write %s to %d.\n",nodeName, value);
+	//ModelicaFormatMessage("MDDopcuaServer.h: Write %s to %d.\n",nodeName, value);
 	writeIntVariable(opcua->server, nodeName, value);
 }
 

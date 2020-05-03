@@ -9,7 +9,7 @@ encapsulated function constructor "Creates an OPC UA server"
   output OPC_UA_Server opcuaServer;
 external "C" opcuaServer = MDD_opcuaServerConstructor()
 annotation(Include = "#include \"MDDopcuaServer.h\"",
-           Library = {"pthread","Ws2_32","wsock32","open62541Wrapper","open62541"},
+           Library = {"open62541Wrapper"},
            __iti_dll = "ITI_MDD.dll",
            __iti_dllNoExport = true);
 
@@ -22,9 +22,10 @@ encapsulated function destructor
   input OPC_UA_Server opcuaServer;
 external "C" MDD_opcuaServerDestructor(opcuaServer)
 annotation(Include = "#include \"MDDopcuaServer.h\"",
-           Library = {"pthread","Ws2_32","wsock32","open62541Wrapper","open62541"},
+           Library = {"open62541Wrapper"},
            __iti_dll = "ITI_MDD.dll",
            __iti_dllNoExport = true);
 end destructor;
 
+  annotation ();
 end OPC_UA_Server;

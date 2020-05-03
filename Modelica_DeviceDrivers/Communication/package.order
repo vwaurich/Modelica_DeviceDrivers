@@ -16,3 +16,5 @@ MQTT
 MQTT_
 TCPIPServer
 TCPIPServer_
+OPC_UA_Server
+OPC_UA_Server_

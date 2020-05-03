@@ -10,9 +10,8 @@ package OPC_UA_Server_
     input Integer intVal;
     external "C" MDD_opcuaAddIntVar(opcua, nodeName, intVal)
       annotation (
-        Include = "#include \"MDDMQTT.h\"",
-        Library = {"pthread"},
-        __iti_dll = "ITI_MDDMQTT.dll",
+        Include = "#include \"MDDopcuaServer.h\"",
+        Library = {"open62541Wrapper"},
         __iti_dllNoExport = true);
   end addIntVar;
 
@@ -25,9 +24,8 @@ package OPC_UA_Server_
     input Integer intVal;
     external "C" MDD_opcuaWriteIntVar(opcua, nodeName, intVal)
       annotation (
-        Include = "#include \"MDDMQTT.h\"",
-        Library = {"pthread"},
-        __iti_dll = "ITI_MDDMQTT.dll",
+        Include = "#include \"MDDopcuaServer.h\"",
+        Library = {"open62541Wrapper"},
         __iti_dllNoExport = true);
   end writeIntVar;
 
@@ -40,9 +38,8 @@ package OPC_UA_Server_
     input Real realVal;
     external "C" MDD_opcuaAddRealVar(opcua, nodeName, realVal)
       annotation (
-        Include = "#include \"MDDMQTT.h\"",
-        Library = {"pthread"},
-        __iti_dll = "ITI_MDDMQTT.dll",
+        Include = "#include \"MDDopcuaServer.h\"",
+        Library = {"open62541Wrapper"},
         __iti_dllNoExport = true);
   end addRealVar;
 
@@ -55,9 +52,8 @@ package OPC_UA_Server_
     input Real realVal;
     external "C" MDD_opcuaWriteRealVar(opcua, nodeName, realVal)
       annotation (
-        Include = "#include \"MDDMQTT.h\"",
-        Library = {"pthread"},
-        __iti_dll = "ITI_MDDMQTT.dll",
+        Include = "#include \"MDDopcuaServer.h\"",
+        Library = {"open62541Wrapper"},
         __iti_dllNoExport = true);
   end writeRealVar;
 end OPC_UA_Server_;
