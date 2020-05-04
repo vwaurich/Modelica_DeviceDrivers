@@ -1398,6 +1398,8 @@ See <a href=\"modelica://Modelica_DeviceDrivers.Blocks.Examples.TestSerialPackag
       connect(conditionalInternalTrigger, actTrigger);
       connect(trigger, actTrigger);
       /* "actTrigger" can now be used by extending classes to trigger calls to I/O devices */
+      annotation (Icon(coordinateSystem(preserveAspectRatio=false, extent={{
+                -100,-100},{100,100}}), graphics));
     end PartialSampleTrigger;
   end Internal;
 
@@ -1599,9 +1601,6 @@ TCP/IP server configuration block. This block is supposed to be used as an inner
 </html>"));
   end TCPIPServerSend;
 
-
-
-
   package OPC_UA
     block OPC_UA_Server
       import Modelica_DeviceDrivers;
@@ -1613,7 +1612,7 @@ TCP/IP server configuration block. This block is supposed to be used as an inner
 
       Modelica_DeviceDrivers.Blocks.Communication.OPC_UA.Interfaces.OPC_UA_ServerConnectorOut
           oPC_UA_ServerConnectorOut    annotation (Placement(transformation(extent={{-10,
-                -108},{10,-88}})));
+                -108},{10,-88}}), iconTransformation(extent={{-30,-130},{18,-80}})));
 
     algorithm
       oPC_UA_ServerConnectorOut.server := server;
@@ -1622,8 +1621,8 @@ TCP/IP server configuration block. This block is supposed to be used as an inner
       oPC_UA_ServerConnectorOut.invocOrder := invocOrder;
 
       annotation (preferredView="info",
-              Icon(coordinateSystem(preserveAspectRatio=false,extent={{-100,-100},{100,100}}),
-                                   graphics={Text(extent={{-150,136},{150,96}},
+              Icon(coordinateSystem(preserveAspectRatio=false,extent={{-100,
+                -100},{100,100}}), graphics={Text(extent={{-150,136},{150,96}},
                 textString="%name"), Bitmap(extent={{-60,60},{80,-50}}, fileName=
                   "modelica://Modelica_DeviceDrivers/Resources/Images/open62541.png"),
             Text(
@@ -1649,7 +1648,7 @@ TCP/IP server configuration block. This block is supposed to be used as an inner
             rotation=0,
             origin={-104,0})));
     initial equation
-        invocOrder = Modelica_DeviceDrivers.Communication.OPC_UA_Server_.addIntVar(oPC_UA_ServerConnectorIn.server, oPC_UA_ServerConnectorIn.invocOrder, nodeName,nodeNsIdx,nodeId,oPC_UA_ServerConnectorIn.parentNsIdx, oPC_UA_ServerConnectorIn.parentNodeId,intVarIn);
+        invocOrder = Modelica_DeviceDrivers.Communication.OPC_UA_Server_.addIntVar(oPC_UA_ServerConnectorIn.server, oPC_UA_ServerConnectorIn.invocOrder, nodeName,nodeNsIdx,nodeId,oPC_UA_ServerConnectorIn.parentNsIdx, oPC_UA_ServerConnectorIn.parentNodeId, Integer(parentRefId), intVarIn);
     equation
       when actTrigger then
         Modelica_DeviceDrivers.Communication.OPC_UA_Server_.writeIntVar(oPC_UA_ServerConnectorIn.server,nodeName,nodeNsIdx,nodeId,intVarIn);
@@ -1676,7 +1675,7 @@ TCP/IP server configuration block. This block is supposed to be used as an inner
             origin={-90,-2})));
 
     initial equation
-      invocOrder = Modelica_DeviceDrivers.Communication.OPC_UA_Server_.addRealVar(oPC_UA_ServerConnectorIn.server, oPC_UA_ServerConnectorIn.invocOrder, nodeName,nodeNsIdx,nodeId,oPC_UA_ServerConnectorIn.parentNsIdx, oPC_UA_ServerConnectorIn.parentNodeId,realVarIn);
+      invocOrder = Modelica_DeviceDrivers.Communication.OPC_UA_Server_.addRealVar(oPC_UA_ServerConnectorIn.server, oPC_UA_ServerConnectorIn.invocOrder, nodeName,nodeNsIdx,nodeId,oPC_UA_ServerConnectorIn.parentNsIdx, oPC_UA_ServerConnectorIn.parentNodeId,Integer(parentRefId),realVarIn);
 
     equation
       when actTrigger then
@@ -1704,7 +1703,7 @@ TCP/IP server configuration block. This block is supposed to be used as an inner
             rotation=0,
             origin={0,-102})));
     initial equation
-        invocOrder = Modelica_DeviceDrivers.Communication.OPC_UA_Server_.addObject(server, oPC_UA_ServerConnectorIn.invocOrder, nodeName, nodeNsIdx, nodeId,oPC_UA_ServerConnectorIn.parentNsIdx, oPC_UA_ServerConnectorIn.parentNodeId);
+        invocOrder = Modelica_DeviceDrivers.Communication.OPC_UA_Server_.addObject(server, oPC_UA_ServerConnectorIn.invocOrder, nodeName, nodeNsIdx, nodeId,oPC_UA_ServerConnectorIn.parentNsIdx, oPC_UA_ServerConnectorIn.parentNodeId,Integer(parentRefId));
     equation
       server = oPC_UA_ServerConnectorIn.server;
       server = oPC_UA_ServerConnectorOut.server;
@@ -1778,11 +1777,17 @@ TCP/IP server configuration block. This block is supposed to be used as an inner
         parameter String nodeName = "nodeName";
         parameter Integer nodeNsIdx = 1;
         parameter Integer nodeId = 101;
+        parameter
+          Modelica_DeviceDrivers.Blocks.Communication.OPC_UA.Types.ReferenceID
+                    parentRefId = Modelica_DeviceDrivers.Blocks.Communication.OPC_UA.Types.ReferenceID.organizes;
         Integer invocOrder "specfying sequence of function invocations";
         Interfaces.OPC_UA_ServerConnectorIn oPC_UA_ServerConnectorIn    annotation (Placement(transformation(extent={{-10,-10},
                   {10,10}},
               rotation=180,
-              origin={0,100})));
+              origin={0,100}), iconTransformation(
+              extent={{-23,-21},{23,21}},
+              rotation=180,
+              origin={-3,101})));
         annotation (Diagram(coordinateSystem(preserveAspectRatio=false, extent={{-100,-100},{100,100}}),
                                      graphics), Icon(coordinateSystem(
                 preserveAspectRatio=false, extent={{-100,-100},{100,100}}), graphics={
@@ -1790,8 +1795,20 @@ TCP/IP server configuration block. This block is supposed to be used as an inner
                 extent={{-56,-44},{50,-64}},
                 lineColor={0,0,255},
                 textString="%nodeName
-(%nodeNsIdx:%nodeId)")}));
+(%nodeNsIdx:%nodeId)"),
+              Text(
+                extent={{-102,130},{100,106}},
+                lineColor={0,0,255},
+                textString="%parentRefId")}));
       end OPC_UA_Node;
     end Interfaces;
+
+    package Types
+        extends Modelica.Icons.TypesPackage;
+      type ReferenceID = enumeration(
+          hasProperty,
+          hasComponent,
+          organizes);
+    end Types;
   end OPC_UA;
 end Communication;

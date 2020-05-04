@@ -9,6 +9,27 @@ static void stopHandler(int sig) {
 	running = false;
 }
 
+UA_NodeId chooseParentReference(int refTypeId)
+{
+	UA_NodeId parentReferenceNodeId;
+	switch (refTypeId)
+	{
+	case(hasProperty):
+		parentReferenceNodeId = UA_NODEID_NUMERIC(0, UA_NS0ID_HASPROPERTY);
+		break;
+	case(hasComponent):
+		parentReferenceNodeId = UA_NODEID_NUMERIC(0, UA_NS0ID_HASCOMPONENT);
+		break;
+	case(organizes):
+		parentReferenceNodeId = UA_NODEID_NUMERIC(0, UA_NS0ID_ORGANIZES);
+		break;
+	default:
+		parentReferenceNodeId = UA_NODEID_NUMERIC(0, UA_NS0ID_HASCOMPONENT);
+	}
+	return parentReferenceNodeId;
+}
+
+
 void* createOPCUAserver()
 {
 	UA_Server *server = UA_Server_new();
@@ -30,7 +51,7 @@ void deleteOPCUAserver(void* opcua)
 	UA_Server_delete(server);  // sometimes, this makes the process crash
 }
 
-void addIntVariable(void * opcua,  char * name, int nodeNsIdx, int intNodeId, int parentNsIdx, int intParentNodeId, int value)
+void addIntVariable(void * opcua,  char * name, int nodeNsIdx, int intNodeId, int parentNsIdx, int intParentNodeId, int referenceId, int value)
 {
 	UA_Server *server = (UA_Server*)opcua;
 
@@ -48,7 +69,8 @@ void addIntVariable(void * opcua,  char * name, int nodeNsIdx, int intNodeId, in
 	UA_QualifiedName myIntegerName = UA_QUALIFIEDNAME(intNodeId, name);
 	//UA_NodeId parentNodeId = UA_NODEID_NUMERIC(0, UA_NS0ID_OBJECTSFOLDER);
 	UA_NodeId parentNodeId = UA_NODEID_NUMERIC(parentNsIdx, intParentNodeId);
-	UA_NodeId parentReferenceNodeId = UA_NODEID_NUMERIC(0, UA_NS0ID_ORGANIZES);
+	//UA_NodeId parentReferenceNodeId = UA_NODEID_NUMERIC(0, UA_NS0ID_ORGANIZES);
+	UA_NodeId parentReferenceNodeId = chooseParentReference(referenceId);
 	UA_Server_addVariableNode(server, IntegerNodeId, parentNodeId,
 		parentReferenceNodeId, myIntegerName,
 		UA_NODEID_NUMERIC(0, UA_NS0ID_BASEDATAVARIABLETYPE), attr, NULL, NULL);
@@ -68,7 +90,7 @@ void writeIntVariable(void * opcua, char * name, int nodeNsIdx, int intNodeId, i
 	UA_Server_writeValue(server, IntegerNodeId, myVar);
 }
 
-void addDoubleVariable(void * opcua, char * name, int nodeNsIdx, int intNodeId, int parentNsIdx, int intParentNodeId, double value)
+void addDoubleVariable(void * opcua, char * name, int nodeNsIdx, int intNodeId, int parentNsIdx, int intParentNodeId, int referenceId, double value)
 {
 	UA_Server *server = (UA_Server*)opcua;
 
@@ -87,7 +109,8 @@ void addDoubleVariable(void * opcua, char * name, int nodeNsIdx, int intNodeId, 
 	UA_QualifiedName myDoubleName = UA_QUALIFIEDNAME(1, name);
 	//UA_NodeId parentNodeId = UA_NODEID_NUMERIC(0, UA_NS0ID_OBJECTSFOLDER);
 	UA_NodeId parentNodeId = UA_NODEID_NUMERIC(parentNsIdx, intParentNodeId);
-	UA_NodeId parentReferenceNodeId = UA_NODEID_NUMERIC(0, UA_NS0ID_ORGANIZES);
+	//UA_NodeId parentReferenceNodeId = UA_NODEID_NUMERIC(0, UA_NS0ID_ORGANIZES);
+	UA_NodeId parentReferenceNodeId = chooseParentReference(referenceId);
 	UA_Server_addVariableNode(server, doubleNodeId, parentNodeId,
 		parentReferenceNodeId, myDoubleName,
 		UA_NODEID_NUMERIC(0, UA_NS0ID_BASEDATAVARIABLETYPE), attr, NULL, NULL);
@@ -109,19 +132,22 @@ void writeDoubleVariable(void * opcua, char * name, int nodeNsIdx, int intNodeId
 	UA_StatusCode sc = UA_Server_writeValue(server, doubleNodeId, myVar);
 }
 
-void addObject(void * opcua, char* name, int nodeNsIdx, int intNodeId, int parentNsIdx, int intParentNodeId) {
+void addObject(void * opcua, char* name, int nodeNsIdx, int intNodeId, int parentNsIdx, int intParentNodeId, int referenceId) {
 	UA_Server *server = (UA_Server*)opcua;
 
 	UA_NodeId objNodeId = UA_NODEID_NUMERIC(nodeNsIdx, intNodeId);
 	UA_NodeId parentNodeId = UA_NODEID_NUMERIC(parentNsIdx, intParentNodeId);
+	UA_NodeId parentReferenceNodeId = chooseParentReference(referenceId);
 
 	UA_ObjectAttributes oAttr = UA_ObjectAttributes_default;
 	oAttr.displayName = UA_LOCALIZEDTEXT("en-US", name);
 	UA_Server_addObjectNode(server, objNodeId,
 		parentNodeId,
-		UA_NODEID_NUMERIC(0, UA_NS0ID_ORGANIZES),
+		//UA_NODEID_NUMERIC(0, UA_NS0ID_ORGANIZES),
+		parentReferenceNodeId,
 		UA_QUALIFIEDNAME(nodeNsIdx, name),
 		UA_NODEID_NUMERIC(0, UA_NS0ID_BASEOBJECTTYPE),
 		oAttr, NULL, &objNodeId);
 }
+
 
