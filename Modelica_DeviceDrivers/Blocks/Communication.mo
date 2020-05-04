@@ -1612,13 +1612,13 @@ TCP/IP server configuration block. This block is supposed to be used as an inner
 
       Modelica_DeviceDrivers.Blocks.Communication.OPC_UA.Interfaces.OPC_UA_ServerConnectorOut
           oPC_UA_ServerConnectorOut    annotation (Placement(transformation(extent={{-10,
-                -108},{10,-88}}), iconTransformation(extent={{-30,-130},{18,-80}})));
+                -108},{10,-88}}), iconTransformation(extent={{-28,-130},{18,-82}})));
 
-    algorithm
-      oPC_UA_ServerConnectorOut.server := server;
-      oPC_UA_ServerConnectorOut.parentNodeId := rootNodeId;
-      oPC_UA_ServerConnectorOut.parentNsIdx := nodeNsIdx;
-      oPC_UA_ServerConnectorOut.invocOrder := invocOrder;
+    equation
+      oPC_UA_ServerConnectorOut.server = server;
+      oPC_UA_ServerConnectorOut.parentNodeId = rootNodeId;
+      oPC_UA_ServerConnectorOut.parentNsIdx = nodeNsIdx;
+      oPC_UA_ServerConnectorOut.invocOrder = invocOrder;
 
       annotation (preferredView="info",
               Icon(coordinateSystem(preserveAspectRatio=false,extent={{-100,
@@ -1647,6 +1647,16 @@ TCP/IP server configuration block. This block is supposed to be used as an inner
         annotation (Placement(transformation(extent={{-20,-20},{20,20}},
             rotation=0,
             origin={-104,0})));
+
+      parameter Boolean canHaveChildNodes = parentRefId<>Modelica_DeviceDrivers.Blocks.Communication.OPC_UA.Types.ReferenceID.hasProperty;
+
+      Interfaces.OPC_UA_ServerConnectorOut oPC_UA_ServerConnectorOut(
+       server = oPC_UA_ServerConnectorIn.server,
+       parentNodeId = nodeId,
+        parentNsIdx =  nodeNsIdx,
+       invocOrder =  invocOrder) if
+                    (parentRefId<>Modelica_DeviceDrivers.Blocks.Communication.OPC_UA.Types.ReferenceID.hasProperty) annotation (Placement(transformation(extent={{-14,
+                -114},{6,-94}}), iconTransformation(extent={{-24,-122},{16,-82}})));
     initial equation
         invocOrder = Modelica_DeviceDrivers.Communication.OPC_UA_Server_.addIntVar(oPC_UA_ServerConnectorIn.server, oPC_UA_ServerConnectorIn.invocOrder, nodeName,nodeNsIdx,nodeId,oPC_UA_ServerConnectorIn.parentNsIdx, oPC_UA_ServerConnectorIn.parentNodeId, Integer(parentRefId), intVarIn);
     equation
@@ -1654,10 +1664,12 @@ TCP/IP server configuration block. This block is supposed to be used as an inner
         Modelica_DeviceDrivers.Communication.OPC_UA_Server_.writeIntVar(oPC_UA_ServerConnectorIn.server,nodeName,nodeNsIdx,nodeId,intVarIn);
         invocOrder = oPC_UA_ServerConnectorIn.invocOrder;
       end when;
-      annotation (Diagram(coordinateSystem(preserveAspectRatio=false, extent={{-100,-100},{100,100}}),
-                                   graphics), Icon(coordinateSystem(
+
+      annotation (Diagram(coordinateSystem(preserveAspectRatio=false, extent={{-100,
+                -100},{100,100}}), graphics), Icon(coordinateSystem(
               preserveAspectRatio=false, extent={{-100,-100},{100,100}}), graphics));
     end OPC_UA_addIntNode;
+
 
     model OPC_UA_addRealNode
       extends Modelica_DeviceDrivers.Utilities.Icons.BaseIcon;
@@ -1719,6 +1731,71 @@ TCP/IP server configuration block. This block is supposed to be used as an inner
               preserveAspectRatio=false, extent={{-100,-100},{100,100}}), graphics));
     end OPC_UA_addObjectNode;
 
+    block OPC_UA_Client
+      import Modelica_DeviceDrivers;
+      extends Modelica_DeviceDrivers.Utilities.Icons.BaseIcon;
+      parameter String endPointURL = "opc.tcp://BFT172:4840/";
+      Modelica_DeviceDrivers.Communication.OPC_UA_Client client = Modelica_DeviceDrivers.Communication.OPC_UA_Client(endPointURL);
+
+      Modelica_DeviceDrivers.Blocks.Communication.OPC_UA.Interfaces.OPC_UA_ClientConnectorOut
+                                                                                              oPC_UA_ClientConnectorOut
+        annotation (Placement(transformation(
+            extent={{-19,-19},{19,19}},
+            rotation=180,
+            origin={-1,-101})));
+
+    equation
+      oPC_UA_ClientConnectorOut.client = client;
+
+      annotation (preferredView="info",
+              Icon(coordinateSystem(preserveAspectRatio=false,extent={{-100,-100},{100,100}}),
+                                   graphics={Text(extent={{-150,136},{150,96}},
+                textString="%name"), Bitmap(extent={{-72,70},{68,-40}}, fileName=
+                  "modelica://Modelica_DeviceDrivers/Resources/Images/open62541.png"),
+            Text(
+              extent={{-46,-30},{62,-80}},
+              lineColor={0,0,255},
+              textString="(%nodeNsIdx:%rootNodeId)")}),
+                                       Documentation(info="<html>
+            <p>OPC-UA Server</p>
+</html>"),
+        Diagram(coordinateSystem(preserveAspectRatio=false, extent={{-100,-100},
+                {100,100}}),
+                        graphics));
+    end OPC_UA_Client;
+
+    model OPC_UA_readIntNode
+      extends Modelica_DeviceDrivers.Utilities.Icons.BaseIcon;
+      extends
+        Modelica_DeviceDrivers.Blocks.Communication.Internal.PartialSampleTrigger;
+
+      parameter Integer nodeNsIdx = 1;
+      parameter Integer nodeId = 101;
+
+      Modelica.Blocks.Interfaces.IntegerOutput intVarOut
+        annotation (Placement(transformation(extent={{-20,-20},{20,20}},
+            rotation=0,
+            origin={112,0}),  iconTransformation(extent={{90,-18},{130,22}})));
+      Interfaces.OPC_UA_ClientConnectorIn oPC_UA_ClientConnectorIn annotation (Placement(transformation(extent={{-10,-10},
+                {10,10}},
+            rotation=180,
+            origin={0,100}),     iconTransformation(extent={{-20,-20},{20,20}},
+            rotation=180,
+            origin={0,100})));
+    equation
+      when actTrigger then
+        intVarOut = Modelica_DeviceDrivers.Communication.OPC_UA_Client_.readIntVar(oPC_UA_ClientConnectorIn.client, nodeNsIdx, nodeId);
+      end when;
+
+      annotation (Diagram(coordinateSystem(preserveAspectRatio=false, extent={{-100,
+                -100},{100,100}}), graphics), Icon(coordinateSystem(
+              preserveAspectRatio=false, extent={{-100,-100},{100,100}}), graphics={
+              Bitmap(extent={{-70,84},{70,-26}}, fileName="modelica://Modelica_DeviceDrivers/Resources/Images/open62541.png"), Text(
+              extent={{-46,-34},{60,-54}},
+              lineColor={0,0,255},
+              textString="(%nodeNsIdx:%nodeId)")}));
+    end OPC_UA_readIntNode;
+
     package Interfaces
         extends Modelica.Icons.InterfacesPackage;
 
@@ -1730,8 +1807,9 @@ TCP/IP server configuration block. This block is supposed to be used as an inner
         annotation (Icon(coordinateSystem(preserveAspectRatio=false, extent={{-100,-100},
                   {100,100}}), graphics={  Rectangle(
                 extent={{-100,50},{100,-30}},
-                fillColor={0,255,0},
-                fillPattern=FillPattern.Sphere),
+                fillColor={170,255,85},
+                fillPattern=FillPattern.Sphere,
+                lineColor={0,127,0}),
               Line(
                 points={{-100,-30},{0,50},{100,-30}},
                 color={255,255,255},
@@ -1739,12 +1817,7 @@ TCP/IP server configuration block. This block is supposed to be used as an inner
               Line(
                 points={{-52,-30},{0,10},{50,-30}},
                 color={255,255,255},
-                thickness=0.5),
-              Line(
-                points={{-110,-8},{-110,66},{112,66},{112,-10}},
-                color={0,127,0},
-                thickness=0.5,
-                smooth=Smooth.None)}));
+                thickness=0.5)}));
       end OPC_UA_ServerConnectorIn;
 
       connector OPC_UA_ServerConnectorOut
@@ -1755,8 +1828,9 @@ TCP/IP server configuration block. This block is supposed to be used as an inner
 
         annotation (Icon(graphics={        Rectangle(
                 extent={{-80,60},{120,-20}},
-                fillColor={150,255,0},
-                fillPattern=FillPattern.Sphere),
+                fillColor={255,255,170},
+                fillPattern=FillPattern.Sphere,
+                lineColor={0,127,0}),
               Line(
                 points={{-80,60},{20,-20},{120,60}},
                 color={255,255,255},
@@ -1764,12 +1838,7 @@ TCP/IP server configuration block. This block is supposed to be used as an inner
               Line(
                 points={{-32,58},{20,18},{70,58}},
                 color={255,255,255},
-                thickness=0.5),
-              Line(
-                points={{-90,36},{-90,-38},{132,-38},{132,38}},
-                color={150,255,0},
-                thickness=0.5,
-                smooth=Smooth.None)}));
+                thickness=0.5)}));
       end OPC_UA_ServerConnectorOut;
 
       model OPC_UA_Node
@@ -1801,6 +1870,42 @@ TCP/IP server configuration block. This block is supposed to be used as an inner
                 lineColor={0,0,255},
                 textString="%parentRefId")}));
       end OPC_UA_Node;
+
+      connector OPC_UA_ClientConnectorIn
+        input Modelica_DeviceDrivers.Communication.OPC_UA_Client client;
+        annotation (Icon(coordinateSystem(preserveAspectRatio=false, extent={{-100,-100},
+                  {100,100}}), graphics={  Rectangle(
+                extent={{-100,50},{100,-30}},
+                fillColor={85,85,255},
+                fillPattern=FillPattern.Sphere,
+                lineColor={127,0,127}),
+              Line(
+                points={{-100,-30},{0,50},{100,-30}},
+                color={255,255,255},
+                thickness=0.5),
+              Line(
+                points={{-52,-30},{0,10},{50,-30}},
+                color={255,255,255},
+                thickness=0.5)}));
+      end OPC_UA_ClientConnectorIn;
+
+      connector OPC_UA_ClientConnectorOut
+        output Modelica_DeviceDrivers.Communication.OPC_UA_Client client;
+        annotation (Icon(coordinateSystem(preserveAspectRatio=false, extent={{-100,-100},
+                  {100,100}}), graphics={  Rectangle(
+                extent={{-100,50},{100,-30}},
+                fillColor={170,170,255},
+                fillPattern=FillPattern.Sphere,
+                lineColor={85,170,255}),
+              Line(
+                points={{-100,-30},{0,50},{100,-30}},
+                color={255,255,255},
+                thickness=0.5),
+              Line(
+                points={{-52,-30},{0,10},{50,-30}},
+                color={255,255,255},
+                thickness=0.5)}));
+      end OPC_UA_ClientConnectorOut;
     end Interfaces;
 
     package Types

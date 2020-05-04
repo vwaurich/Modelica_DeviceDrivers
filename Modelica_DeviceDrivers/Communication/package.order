@@ -18,3 +18,5 @@ TCPIPServer
 TCPIPServer_
 OPC_UA_Server
 OPC_UA_Server_
+OPC_UA_Client
+OPC_UA_Client_

@@ -18,7 +18,7 @@ equation
       smooth=Smooth.None));
   connect(oPC_UA_addIntNode.oPC_UA_ServerConnectorIn, oPC_UA_Server1.oPC_UA_ServerConnectorOut)
     annotation (Line(
-      points={{-20,52},{-20,74.2},{-22,74.2}},
+      points={{-20.3,52.1},{-20.3,73.5},{-22.6,73.5}},
       color={0,0,0},
       smooth=Smooth.None));
   connect(realToInteger.y, oPC_UA_addIntNode.intVarIn) annotation (Line(

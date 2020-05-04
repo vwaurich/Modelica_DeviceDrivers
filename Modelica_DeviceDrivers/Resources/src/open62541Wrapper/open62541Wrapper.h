@@ -32,3 +32,8 @@ LIB_API void writeIntVariable(void* opcua, char* name, int nodeNsIdx, int intNod
 LIB_API void addDoubleVariable(void* opcua, char* name, int nodeNsIdx, int intNodeId, int parentNsIdx, int intParentNodeId, int referenceId, double value);
 LIB_API void writeDoubleVariable(void* opcua, char* name, int nodeNsIdx, int intNodeId, double value);
 LIB_API void addObject(void *server, char* name, int nodeNsIdx, int nodeId, int parentNsIdx, int intParentNodeId, int referenceId);
+
+LIB_API void* createOPCUAclient();
+LIB_API int startOPCUAclient(void* client_vp, char* endpointURL);
+LIB_API void deleteOPCUAclient(void* client_vp);
+LIB_API int readIntValue(void* client_vp, int nodeNsIdx, int intNodeId);

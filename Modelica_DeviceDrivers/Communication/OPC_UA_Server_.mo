@@ -10,11 +10,12 @@ package OPC_UA_Server_
     input String nodeName;
     input Integer nodeNsIdx;
     input Integer nodeId;
-    input Integer parentNsIdx = 0;
-    input Integer parentNodeId = 85;
+    input Integer parentNsIdx;
+    input Integer parentNodeId;
+    input Integer parentReferenceId;
     input Integer intVal;
     output Integer invocOrderOut;
-    external "C" invocOrderOut=  MDD_opcuaAddIntVar(opcua, invocOrderIn, nodeName, nodeNsIdx, nodeId, parentNsIdx, parentNodeId, intVal)
+    external "C" invocOrderOut=  MDD_opcuaAddIntVar(opcua, invocOrderIn, nodeName, nodeNsIdx, nodeId, parentNsIdx, parentNodeId, parentReferenceId,intVal)
       annotation (
         Include = "#include \"MDDopcuaServer.h\"",
         Library = {"open62541Wrapper"},
@@ -46,11 +47,12 @@ package OPC_UA_Server_
     input String nodeName;
     input Integer nodeNsIdx;
     input Integer nodeId;
-    input Integer parentNsIdx = 0;
-    input Integer parentNodeId = 85;
+    input Integer parentNsIdx;
+    input Integer parentNodeId;
+    input Integer parentReferenceId;
     input Real realVal;
     output Integer invocOrderOut;
-    external "C" invocOrderOut=  MDD_opcuaAddRealVar(opcua,invocOrderIn, nodeName, nodeNsIdx, nodeId, parentNsIdx, parentNodeId, realVal)
+    external "C" invocOrderOut=  MDD_opcuaAddRealVar(opcua,invocOrderIn, nodeName, nodeNsIdx, nodeId, parentNsIdx, parentNodeId, parentReferenceId, realVal)
       annotation (
         Include = "#include \"MDDopcuaServer.h\"",
         Library = {"open62541Wrapper"},
@@ -85,8 +87,9 @@ package OPC_UA_Server_
     input Integer nodeId;
     input Integer parentNsIdx;
     input Integer parentNodeId;
+    input Integer parentReferenceId;
     output Integer invocOrderOut;
-    external "C" invocOrderOut=  MDD_opcuaAddObjectNode(opcua, invocOrderIn, nodeName, nodeNsIdx, nodeId, parentNsIdx, parentNodeId)
+    external "C" invocOrderOut=  MDD_opcuaAddObjectNode(opcua, invocOrderIn, nodeName, nodeNsIdx, nodeId, parentNsIdx, parentNodeId, parentReferenceId)
       annotation (
         Include = "#include \"MDDopcuaServer.h\"",
         Library = {"open62541Wrapper"},
