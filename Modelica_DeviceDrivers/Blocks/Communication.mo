@@ -1641,7 +1641,8 @@ TCP/IP server configuration block. This block is supposed to be used as an inner
       extends Modelica_DeviceDrivers.Utilities.Icons.BaseIcon;
       extends
         Modelica_DeviceDrivers.Blocks.Communication.Internal.PartialSampleTrigger;
-      extends Modelica_DeviceDrivers.Blocks.Communication.OPC_UA.OPC_UA_Node(nodeName="anIntegerNode",nodeNsIdx=1,nodeId=101);
+      extends
+        Modelica_DeviceDrivers.Blocks.Communication.OPC_UA.Interfaces.OPC_UA_Node(      nodeName="anIntegerNode",nodeNsIdx=1,nodeId=101);
 
       Modelica.Blocks.Interfaces.IntegerInput intVarIn
         annotation (Placement(transformation(extent={{-20,-20},{20,20}},
@@ -1663,7 +1664,8 @@ TCP/IP server configuration block. This block is supposed to be used as an inner
       extends Modelica_DeviceDrivers.Utilities.Icons.BaseIcon;
       extends
         Modelica_DeviceDrivers.Blocks.Communication.Internal.PartialSampleTrigger;
-      extends Modelica_DeviceDrivers.Blocks.Communication.OPC_UA.OPC_UA_Node(nodeName="aRealNode",nodeNsIdx=1,nodeId=102);
+      extends
+        Modelica_DeviceDrivers.Blocks.Communication.OPC_UA.Interfaces.OPC_UA_Node(      nodeName="aRealNode",nodeNsIdx=1,nodeId=102);
 
       Modelica.Blocks.Interfaces.RealInput realVarIn
         annotation (Placement(transformation(extent={{-20,-20},{20,20}},
@@ -1689,7 +1691,8 @@ TCP/IP server configuration block. This block is supposed to be used as an inner
 
     model OPC_UA_addObjectNode
       extends Modelica_DeviceDrivers.Utilities.Icons.BaseIcon;
-      extends Modelica_DeviceDrivers.Blocks.Communication.OPC_UA.OPC_UA_Node(nodeName="anObjectNode",nodeNsIdx=1,nodeId=103);
+      extends
+        Modelica_DeviceDrivers.Blocks.Communication.OPC_UA.Interfaces.OPC_UA_Node(      nodeName="anObjectNode",nodeNsIdx=1,nodeId=103);
 
       Modelica_DeviceDrivers.Communication.OPC_UA_Server server;
       Interfaces.OPC_UA_ServerConnectorOut oPC_UA_ServerConnectorOut annotation (
@@ -1769,26 +1772,26 @@ TCP/IP server configuration block. This block is supposed to be used as an inner
                 thickness=0.5,
                 smooth=Smooth.None)}));
       end OPC_UA_ServerConnectorOut;
-    end Interfaces;
 
-    model OPC_UA_Node
-      extends Modelica_DeviceDrivers.Utilities.Icons.BaseIcon;
-      parameter String nodeName = "nodeName";
-      parameter Integer nodeNsIdx = 1;
-      parameter Integer nodeId = 101;
-      Integer invocOrder "specfying sequence of function invocations";
-      Interfaces.OPC_UA_ServerConnectorIn oPC_UA_ServerConnectorIn    annotation (Placement(transformation(extent={{-10,-10},
-                {10,10}},
-            rotation=180,
-            origin={0,100})));
-      annotation (Diagram(coordinateSystem(preserveAspectRatio=false, extent={{-100,-100},{100,100}}),
-                                   graphics), Icon(coordinateSystem(
-              preserveAspectRatio=false, extent={{-100,-100},{100,100}}), graphics={
-              Bitmap(extent={{-72,90},{68,-20}}, fileName="modelica://Modelica_DeviceDrivers/Resources/Images/open62541.png"), Text(
-              extent={{-56,-44},{50,-64}},
-              lineColor={0,0,255},
-              textString="%nodeName
+      model OPC_UA_Node
+        extends Modelica_DeviceDrivers.Utilities.Icons.BaseIcon;
+        parameter String nodeName = "nodeName";
+        parameter Integer nodeNsIdx = 1;
+        parameter Integer nodeId = 101;
+        Integer invocOrder "specfying sequence of function invocations";
+        Interfaces.OPC_UA_ServerConnectorIn oPC_UA_ServerConnectorIn    annotation (Placement(transformation(extent={{-10,-10},
+                  {10,10}},
+              rotation=180,
+              origin={0,100})));
+        annotation (Diagram(coordinateSystem(preserveAspectRatio=false, extent={{-100,-100},{100,100}}),
+                                     graphics), Icon(coordinateSystem(
+                preserveAspectRatio=false, extent={{-100,-100},{100,100}}), graphics={
+                Bitmap(extent={{-72,90},{68,-20}}, fileName="modelica://Modelica_DeviceDrivers/Resources/Images/open62541.png"), Text(
+                extent={{-56,-44},{50,-64}},
+                lineColor={0,0,255},
+                textString="%nodeName
 (%nodeNsIdx:%nodeId)")}));
-    end OPC_UA_Node;
+      end OPC_UA_Node;
+    end Interfaces;
   end OPC_UA;
 end Communication;
