@@ -6,13 +6,15 @@ package OPC_UA_Server_
     import Modelica_DeviceDrivers.Communication.OPC_UA_Server;
     extends Modelica.Icons.Function;
     input OPC_UA_Server opcua;
+    input Integer invocOrderIn;
     input String nodeName;
     input Integer nodeNsIdx;
     input Integer nodeId;
     input Integer parentNsIdx = 0;
     input Integer parentNodeId = 85;
     input Integer intVal;
-    external "C" MDD_opcuaAddIntVar(opcua, nodeName, nodeNsIdx, nodeId, parentNsIdx, parentNodeId, intVal)
+    output Integer invocOrderOut;
+    external "C" invocOrderOut=  MDD_opcuaAddIntVar(opcua, invocOrderIn, nodeName, nodeNsIdx, nodeId, parentNsIdx, parentNodeId, intVal)
       annotation (
         Include = "#include \"MDDopcuaServer.h\"",
         Library = {"open62541Wrapper"},
@@ -25,7 +27,7 @@ package OPC_UA_Server_
     extends Modelica.Icons.Function;
     input OPC_UA_Server opcua;
     input String nodeName;
-      input Integer nodeNsIdx;
+    input Integer nodeNsIdx;
     input Integer nodeId;
     input Integer intVal;
     external "C" MDD_opcuaWriteIntVar(opcua, nodeName, nodeNsIdx, nodeId, intVal)
@@ -40,13 +42,15 @@ package OPC_UA_Server_
     import Modelica_DeviceDrivers.Communication.OPC_UA_Server;
     extends Modelica.Icons.Function;
     input OPC_UA_Server opcua;
+    input Integer invocOrderIn;
     input String nodeName;
     input Integer nodeNsIdx;
     input Integer nodeId;
     input Integer parentNsIdx = 0;
     input Integer parentNodeId = 85;
     input Real realVal;
-    external "C" MDD_opcuaAddRealVar(opcua, nodeName, nodeNsIdx, nodeId, parentNsIdx, parentNodeId, realVal)
+    output Integer invocOrderOut;
+    external "C" invocOrderOut=  MDD_opcuaAddRealVar(opcua,invocOrderIn, nodeName, nodeNsIdx, nodeId, parentNsIdx, parentNodeId, realVal)
       annotation (
         Include = "#include \"MDDopcuaServer.h\"",
         Library = {"open62541Wrapper"},
@@ -75,12 +79,14 @@ package OPC_UA_Server_
     import Modelica_DeviceDrivers.Communication.OPC_UA_Server;
     extends Modelica.Icons.Function;
     input OPC_UA_Server opcua;
+    input Integer invocOrderIn;
     input String nodeName;
     input Integer nodeNsIdx;
     input Integer nodeId;
     input Integer parentNsIdx;
     input Integer parentNodeId;
-    external "C" MDD_opcuaAddObjectNode(opcua, nodeName, nodeNsIdx, nodeId, parentNsIdx, parentNodeId)
+    output Integer invocOrderOut;
+    external "C" invocOrderOut=  MDD_opcuaAddObjectNode(opcua, invocOrderIn, nodeName, nodeNsIdx, nodeId, parentNsIdx, parentNodeId)
       annotation (
         Include = "#include \"MDDopcuaServer.h\"",
         Library = {"open62541Wrapper"},

@@ -1609,6 +1609,7 @@ TCP/IP server configuration block. This block is supposed to be used as an inner
       Modelica_DeviceDrivers.Communication.OPC_UA_Server server = Modelica_DeviceDrivers.Communication.OPC_UA_Server();
       constant Integer rootNodeId = 85;
       constant Integer nodeNsIdx=0;
+      constant Integer invocOrder = 1;
 
       Modelica_DeviceDrivers.Blocks.Communication.OPC_UA.Interfaces.OPC_UA_ServerConnectorOut
           oPC_UA_ServerConnectorOut    annotation (Placement(transformation(extent={{-10,
@@ -1618,6 +1619,7 @@ TCP/IP server configuration block. This block is supposed to be used as an inner
       oPC_UA_ServerConnectorOut.server := server;
       oPC_UA_ServerConnectorOut.parentNodeId := rootNodeId;
       oPC_UA_ServerConnectorOut.parentNsIdx := nodeNsIdx;
+      oPC_UA_ServerConnectorOut.invocOrder := invocOrder;
 
       annotation (preferredView="info",
               Icon(coordinateSystem(preserveAspectRatio=false,extent={{-100,-100},{100,100}}),
@@ -1646,10 +1648,11 @@ TCP/IP server configuration block. This block is supposed to be used as an inner
             rotation=0,
             origin={-104,0})));
     initial equation
-        Modelica_DeviceDrivers.Communication.OPC_UA_Server_.addIntVar(oPC_UA_ServerConnectorIn.server,nodeName,nodeNsIdx,nodeId,oPC_UA_ServerConnectorIn.parentNsIdx, oPC_UA_ServerConnectorIn.parentNodeId,intVarIn);
+        invocOrder = Modelica_DeviceDrivers.Communication.OPC_UA_Server_.addIntVar(oPC_UA_ServerConnectorIn.server, oPC_UA_ServerConnectorIn.invocOrder, nodeName,nodeNsIdx,nodeId,oPC_UA_ServerConnectorIn.parentNsIdx, oPC_UA_ServerConnectorIn.parentNodeId,intVarIn);
     equation
       when actTrigger then
         Modelica_DeviceDrivers.Communication.OPC_UA_Server_.writeIntVar(oPC_UA_ServerConnectorIn.server,nodeName,nodeNsIdx,nodeId,intVarIn);
+        invocOrder = oPC_UA_ServerConnectorIn.invocOrder;
       end when;
       annotation (Diagram(coordinateSystem(preserveAspectRatio=false, extent={{-100,-100},{100,100}}),
                                    graphics), Icon(coordinateSystem(
@@ -1671,12 +1674,14 @@ TCP/IP server configuration block. This block is supposed to be used as an inner
             origin={-90,-2})));
 
     initial equation
-        Modelica_DeviceDrivers.Communication.OPC_UA_Server_.addRealVar(oPC_UA_ServerConnectorIn.server,nodeName,nodeNsIdx,nodeId,oPC_UA_ServerConnectorIn.parentNsIdx, oPC_UA_ServerConnectorIn.parentNodeId,realVarIn);
+      invocOrder = Modelica_DeviceDrivers.Communication.OPC_UA_Server_.addRealVar(oPC_UA_ServerConnectorIn.server, oPC_UA_ServerConnectorIn.invocOrder, nodeName,nodeNsIdx,nodeId,oPC_UA_ServerConnectorIn.parentNsIdx, oPC_UA_ServerConnectorIn.parentNodeId,realVarIn);
 
     equation
       when actTrigger then
         Modelica_DeviceDrivers.Communication.OPC_UA_Server_.writeRealVar(oPC_UA_ServerConnectorIn.server,nodeName,nodeNsIdx,nodeId,realVarIn);
+        invocOrder = oPC_UA_ServerConnectorIn.invocOrder;
       end when;
+
       annotation (Diagram(coordinateSystem(preserveAspectRatio=false, extent={{-100,
                 -100},{100,100}}), graphics), Icon(coordinateSystem(
               preserveAspectRatio=false, extent={{-100,-100},{100,100}}), graphics));
@@ -1696,14 +1701,19 @@ TCP/IP server configuration block. This block is supposed to be used as an inner
             rotation=0,
             origin={0,-102})));
     initial equation
-        Modelica_DeviceDrivers.Communication.OPC_UA_Server_.addObject(server, nodeName, nodeNsIdx, nodeId,oPC_UA_ServerConnectorIn.parentNsIdx, oPC_UA_ServerConnectorIn.parentNodeId);
+        invocOrder = Modelica_DeviceDrivers.Communication.OPC_UA_Server_.addObject(server, oPC_UA_ServerConnectorIn.invocOrder, nodeName, nodeNsIdx, nodeId,oPC_UA_ServerConnectorIn.parentNsIdx, oPC_UA_ServerConnectorIn.parentNodeId);
     equation
       server = oPC_UA_ServerConnectorIn.server;
       server = oPC_UA_ServerConnectorOut.server;
       nodeId = oPC_UA_ServerConnectorOut.parentNodeId;
       nodeNsIdx = oPC_UA_ServerConnectorOut.parentNsIdx;
-      annotation (Diagram(coordinateSystem(preserveAspectRatio=false, extent={{-100,
-                -100},{100,100}}), graphics), Icon(coordinateSystem(
+      invocOrder = oPC_UA_ServerConnectorOut.invocOrder;
+      //please the compiler with a dummy discrete equation as we only need the initial behaviour
+      when (time<-1) then
+        invocOrder=pre(invocOrder);
+      end when;
+      annotation (Diagram(coordinateSystem(preserveAspectRatio=false, extent={{-100,-100},{100,100}}),
+                                   graphics), Icon(coordinateSystem(
               preserveAspectRatio=false, extent={{-100,-100},{100,100}}), graphics));
     end OPC_UA_addObjectNode;
 
@@ -1712,6 +1722,7 @@ TCP/IP server configuration block. This block is supposed to be used as an inner
 
       connector OPC_UA_ServerConnectorIn
         input Modelica_DeviceDrivers.Communication.OPC_UA_Server server;
+        input Integer invocOrder;
         input Integer parentNodeId;
         input Integer parentNsIdx;
         annotation (Icon(coordinateSystem(preserveAspectRatio=false, extent={{-100,-100},
@@ -1735,8 +1746,8 @@ TCP/IP server configuration block. This block is supposed to be used as an inner
       end OPC_UA_ServerConnectorIn;
 
       connector OPC_UA_ServerConnectorOut
-
         output Modelica_DeviceDrivers.Communication.OPC_UA_Server server;
+        output Integer invocOrder;
         output Integer parentNodeId;
         output Integer parentNsIdx;
 
@@ -1765,6 +1776,7 @@ TCP/IP server configuration block. This block is supposed to be used as an inner
       parameter String nodeName = "nodeName";
       parameter Integer nodeNsIdx = 1;
       parameter Integer nodeId = 101;
+      Integer invocOrder "specfying sequence of function invocations";
       Interfaces.OPC_UA_ServerConnectorIn oPC_UA_ServerConnectorIn    annotation (Placement(transformation(extent={{-10,-10},
                 {10,10}},
             rotation=180,
