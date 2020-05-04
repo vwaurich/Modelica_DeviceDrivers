@@ -89,30 +89,40 @@ DllExport void MDD_opcuaServerDestructor(void * p_opcua)
     WSACleanup();
 }
 
-DllExport void MDD_opcuaAddIntVar(void* p_opcua, char* nodeName, int value)
+DllExport void MDD_opcuaAddIntVar(void* p_opcua, char* nodeName, int nodeNsIdx,  int nodeId, int parentNsIdx, int parentNodeId, int value)
 {
 	MDDopcuaServer * opcua = (MDDopcuaServer *) p_opcua;
-	addIntVariable(opcua->server, nodeName, value);
+	ModelicaFormatMessage("MDDopcuaServer.h:AddInt %s (%d:%d)to parent %d:%d.\n",nodeName, nodeNsIdx, nodeId, parentNsIdx, parentNodeId);
+	addIntVariable(opcua->server, nodeName, nodeNsIdx, nodeId, parentNsIdx, parentNodeId, value);
 }
 
-DllExport void MDD_opcuaWriteIntVar(void* p_opcua, char* nodeName, int value)
+DllExport void MDD_opcuaWriteIntVar(void* p_opcua, char* nodeName, int nodeNsIdx, int nodeId, int value)
+{
+	MDDopcuaServer * opcua = (MDDopcuaServer *) p_opcua;
+	//ModelicaFormatMessage("MDDopcuaServer.h: Write %s (%d)to %d.\n",nodeName, nodeId, value);
+	writeIntVariable(opcua->server, nodeName, nodeNsIdx, nodeId, value);
+}
+
+DllExport void MDD_opcuaAddRealVar(void* p_opcua, char* nodeName,int nodeNsIdx,  int nodeId, int parentNsIdx, int parentNodeId, double value)
+{
+	MDDopcuaServer * opcua = (MDDopcuaServer *) p_opcua;
+	ModelicaFormatMessage("MDDopcuaServer.h:AddReal %s (%d:%d)to parent %d:%d.\n",nodeName, nodeNsIdx, nodeId, parentNsIdx, parentNodeId);
+	addDoubleVariable(opcua->server, nodeName, nodeNsIdx, nodeId, parentNsIdx, parentNodeId, value);
+}
+
+DllExport void MDD_opcuaWriteRealVar(void* p_opcua, char* nodeName, int nodeNsIdx, int nodeId, double value)
 {
 	MDDopcuaServer * opcua = (MDDopcuaServer *) p_opcua;
 	//ModelicaFormatMessage("MDDopcuaServer.h: Write %s to %d.\n",nodeName, value);
-	writeIntVariable(opcua->server, nodeName, value);
+	writeDoubleVariable(opcua->server, nodeName, nodeNsIdx, nodeId, value);
 }
 
-DllExport void MDD_opcuaAddRealVar(void* p_opcua, char* nodeName, double value)
+DllExport void MDD_opcuaAddObjectNode(void* p_opcua, char* nodeName, int nodeNsIdx,  int nodeId, int parentNsIdx, int parentNodeId)
 {
 	MDDopcuaServer * opcua = (MDDopcuaServer *) p_opcua;
-	addDoubleVariable(opcua->server, nodeName, value);
-}
-
-DllExport void MDD_opcuaWriteRealVar(void* p_opcua, char* nodeName, double value)
-{
-	MDDopcuaServer * opcua = (MDDopcuaServer *) p_opcua;
-	//ModelicaFormatMessage("MDDopcuaServer.h: Write %s to %d.\n",nodeName, value);
-	writeDoubleVariable(opcua->server, nodeName, value);
+	ModelicaFormatMessage("MDDopcuaServer.h:AddObject %s (%d:%d)to parent %d:%d.\n",nodeName, nodeNsIdx, nodeId, parentNsIdx, parentNodeId);
+	addObject(opcua->server, nodeName, nodeNsIdx, nodeId, parentNsIdx,
+	parentNodeId);
 }
 
 #else

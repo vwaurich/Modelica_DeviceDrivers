@@ -1408,7 +1408,8 @@ See <a href=\"modelica://Modelica_DeviceDrivers.Blocks.Examples.TestSerialPackag
     parameter Integer maxClients = 1
       "Maximum number of clients that can connect simultaneously";
     parameter Boolean useNonblockingMode = true
-      "=true, use non-blocking TCP/IP socket, otherwise receiving and sending will block"                 annotation(Dialog(group="Advanced"), choices(checkBox=true));
+      "=true, use non-blocking TCP/IP socket, otherwise receiving and sending will block"
+                                                                                                          annotation(Dialog(group="Advanced"), choices(checkBox=true));
     output Modelica_DeviceDrivers.Communication.TCPIPServer tcpipserver = Modelica_DeviceDrivers.Communication.TCPIPServer(port, maxClients, useNonblockingMode)
       "Device handle";
     annotation (
@@ -1598,75 +1599,184 @@ TCP/IP server configuration block. This block is supposed to be used as an inner
 </html>"));
   end TCPIPServerSend;
 
-  block OPC_UA_Server
-    import Modelica_DeviceDrivers;
-    extends Modelica_DeviceDrivers.Utilities.Icons.BaseIcon;
-    Modelica_DeviceDrivers.Communication.OPC_UA_Server server = Modelica_DeviceDrivers.Communication.OPC_UA_Server();
 
-    Modelica_DeviceDrivers.Blocks.Interfaces.OPC_UA_ServerConnectorOut
-      oPC_UA_ServerConnectorOut    annotation (Placement(transformation(extent={{-10,
-              -108},{10,-88}})));
 
-  algorithm
-    oPC_UA_ServerConnectorOut.server := server;
-    annotation (preferredView="info",
-            Icon(coordinateSystem(preserveAspectRatio=true, extent={{-100,
-              -100},{100,100}}), graphics={Text(extent={{-150,136},{150,96}},
-              textString="%name"), Bitmap(extent={{-60,60},{80,-50}}, fileName=
-                "modelica://Modelica_DeviceDrivers/Resources/Images/open62541.png")}),
-                                     Documentation(info="<html>
+
+  package OPC_UA
+    block OPC_UA_Server
+      import Modelica_DeviceDrivers;
+      extends Modelica_DeviceDrivers.Utilities.Icons.BaseIcon;
+      Modelica_DeviceDrivers.Communication.OPC_UA_Server server = Modelica_DeviceDrivers.Communication.OPC_UA_Server();
+      constant Integer rootNodeId = 85;
+      constant Integer nodeNsIdx=0;
+
+      Modelica_DeviceDrivers.Blocks.Communication.OPC_UA.Interfaces.OPC_UA_ServerConnectorOut
+          oPC_UA_ServerConnectorOut    annotation (Placement(transformation(extent={{-10,
+                -108},{10,-88}})));
+
+    algorithm
+      oPC_UA_ServerConnectorOut.server := server;
+      oPC_UA_ServerConnectorOut.parentNodeId := rootNodeId;
+      oPC_UA_ServerConnectorOut.parentNsIdx := nodeNsIdx;
+
+      annotation (preferredView="info",
+              Icon(coordinateSystem(preserveAspectRatio=false,extent={{-100,-100},{100,100}}),
+                                   graphics={Text(extent={{-150,136},{150,96}},
+                textString="%name"), Bitmap(extent={{-60,60},{80,-50}}, fileName=
+                  "modelica://Modelica_DeviceDrivers/Resources/Images/open62541.png"),
+            Text(
+              extent={{-46,-30},{62,-80}},
+              lineColor={0,0,255},
+              textString="(%nodeNsIdx:%rootNodeId)")}),
+                                       Documentation(info="<html>
             <p>OPC-UA Server</p>
 </html>"),
-      Diagram(coordinateSystem(preserveAspectRatio=false, extent={{-100,-100},{
-              100,100}}),
-                      graphics));
-  end OPC_UA_Server;
+        Diagram(coordinateSystem(preserveAspectRatio=false, extent={{-100,-100},{100,100}}),
+                        graphics));
+    end OPC_UA_Server;
 
-  model OPC_UA_addIntNode
-    extends Modelica_DeviceDrivers.Utilities.Icons.BaseIcon;
-    extends
-      Modelica_DeviceDrivers.Blocks.Communication.Internal.PartialSampleTrigger;
+    model OPC_UA_addIntNode
+      extends Modelica_DeviceDrivers.Utilities.Icons.BaseIcon;
+      extends
+        Modelica_DeviceDrivers.Blocks.Communication.Internal.PartialSampleTrigger;
+      extends Modelica_DeviceDrivers.Blocks.Communication.OPC_UA.OPC_UA_Node(nodeName="anIntegerNode",nodeNsIdx=1,nodeId=101);
 
-    parameter String nodeName = "aloha";
-    Modelica.Blocks.Interfaces.IntegerInput intVarIn
-      annotation (Placement(transformation(extent={{-124,-20},{-84,20}})));
-    Modelica_DeviceDrivers.Blocks.Interfaces.OPC_UA_ServerConnectorIn oPC_UA_ServerConnectorIn    annotation (Placement(transformation(extent={{92,-10},{112,10}})));
-    Modelica_DeviceDrivers.Communication.OPC_UA_Server server;
-  initial equation
-      Modelica_DeviceDrivers.Communication.OPC_UA_Server_.addIntVar(server,nodeName,intVarIn);
+      Modelica.Blocks.Interfaces.IntegerInput intVarIn
+        annotation (Placement(transformation(extent={{-20,-20},{20,20}},
+            rotation=0,
+            origin={-104,0})));
+    initial equation
+        Modelica_DeviceDrivers.Communication.OPC_UA_Server_.addIntVar(oPC_UA_ServerConnectorIn.server,nodeName,nodeNsIdx,nodeId,oPC_UA_ServerConnectorIn.parentNsIdx, oPC_UA_ServerConnectorIn.parentNodeId,intVarIn);
+    equation
+      when actTrigger then
+        Modelica_DeviceDrivers.Communication.OPC_UA_Server_.writeIntVar(oPC_UA_ServerConnectorIn.server,nodeName,nodeNsIdx,nodeId,intVarIn);
+      end when;
+      annotation (Diagram(coordinateSystem(preserveAspectRatio=false, extent={{-100,-100},{100,100}}),
+                                   graphics), Icon(coordinateSystem(
+              preserveAspectRatio=false, extent={{-100,-100},{100,100}}), graphics));
+    end OPC_UA_addIntNode;
 
-  equation
-    server = oPC_UA_ServerConnectorIn.server;
-    when actTrigger then
-      Modelica_DeviceDrivers.Communication.OPC_UA_Server_.writeIntVar(server,nodeName,intVarIn);
-    end when;
-    annotation (Diagram(coordinateSystem(preserveAspectRatio=false, extent={{-100,
-              -100},{100,100}}), graphics), Icon(coordinateSystem(
-            preserveAspectRatio=false, extent={{-100,-100},{100,100}}), graphics={
-            Bitmap(extent={{-70,50},{70,-60}}, fileName="modelica://Modelica_DeviceDrivers/Resources/Images/open62541.png")}));
-  end OPC_UA_addIntNode;
+    model OPC_UA_addRealNode
+      extends Modelica_DeviceDrivers.Utilities.Icons.BaseIcon;
+      extends
+        Modelica_DeviceDrivers.Blocks.Communication.Internal.PartialSampleTrigger;
+      extends Modelica_DeviceDrivers.Blocks.Communication.OPC_UA.OPC_UA_Node(nodeName="aRealNode",nodeNsIdx=1,nodeId=102);
 
-  model OPC_UA_addRealNode
-    extends Modelica_DeviceDrivers.Utilities.Icons.BaseIcon;
-    extends
-      Modelica_DeviceDrivers.Blocks.Communication.Internal.PartialSampleTrigger;
+      Modelica.Blocks.Interfaces.RealInput realVarIn
+        annotation (Placement(transformation(extent={{-20,-20},{20,20}},
+            rotation=-90,
+            origin={0,102}), iconTransformation(
+            extent={{-20,-20},{20,20}},
+            rotation=0,
+            origin={-90,-2})));
 
-    parameter String nodeName = "realNode";
-    Modelica.Blocks.Interfaces.RealInput realVarIn
-      annotation (Placement(transformation(extent={{-124,-20},{-84,20}})));
-    Modelica_DeviceDrivers.Blocks.Interfaces.OPC_UA_ServerConnectorIn oPC_UA_ServerConnectorIn    annotation (Placement(transformation(extent={{92,-10},{112,10}})));
-    Modelica_DeviceDrivers.Communication.OPC_UA_Server server;
-  initial equation
-      Modelica_DeviceDrivers.Communication.OPC_UA_Server_.addRealVar(server,nodeName,realVarIn);
+    initial equation
+        Modelica_DeviceDrivers.Communication.OPC_UA_Server_.addRealVar(oPC_UA_ServerConnectorIn.server,nodeName,nodeNsIdx,nodeId,oPC_UA_ServerConnectorIn.parentNsIdx, oPC_UA_ServerConnectorIn.parentNodeId,realVarIn);
 
-  equation
-  server = oPC_UA_ServerConnectorIn.server;
-    when actTrigger then
-      Modelica_DeviceDrivers.Communication.OPC_UA_Server_.writeRealVar(server,nodeName,realVarIn);
-    end when;
-    annotation (Diagram(coordinateSystem(preserveAspectRatio=false, extent={{-100,
-              -100},{100,100}}), graphics), Icon(coordinateSystem(
-            preserveAspectRatio=false, extent={{-100,-100},{100,100}}), graphics={
-            Bitmap(extent={{-70,50},{70,-60}}, fileName="modelica://Modelica_DeviceDrivers/Resources/Images/open62541.png")}));
-  end OPC_UA_addRealNode;
+    equation
+      when actTrigger then
+        Modelica_DeviceDrivers.Communication.OPC_UA_Server_.writeRealVar(oPC_UA_ServerConnectorIn.server,nodeName,nodeNsIdx,nodeId,realVarIn);
+      end when;
+      annotation (Diagram(coordinateSystem(preserveAspectRatio=false, extent={{-100,
+                -100},{100,100}}), graphics), Icon(coordinateSystem(
+              preserveAspectRatio=false, extent={{-100,-100},{100,100}}), graphics));
+    end OPC_UA_addRealNode;
+
+    model OPC_UA_addObjectNode
+      extends Modelica_DeviceDrivers.Utilities.Icons.BaseIcon;
+      extends Modelica_DeviceDrivers.Blocks.Communication.OPC_UA.OPC_UA_Node(nodeName="anObjectNode",nodeNsIdx=1,nodeId=103);
+
+      Modelica_DeviceDrivers.Communication.OPC_UA_Server server;
+      Interfaces.OPC_UA_ServerConnectorOut oPC_UA_ServerConnectorOut annotation (
+          Placement(transformation(
+            extent={{-10,-10},{10,10}},
+            rotation=0,
+            origin={-2,-102}),iconTransformation(
+            extent={{-10,-10},{10,10}},
+            rotation=0,
+            origin={0,-102})));
+    initial equation
+        Modelica_DeviceDrivers.Communication.OPC_UA_Server_.addObject(server, nodeName, nodeNsIdx, nodeId,oPC_UA_ServerConnectorIn.parentNsIdx, oPC_UA_ServerConnectorIn.parentNodeId);
+    equation
+      server = oPC_UA_ServerConnectorIn.server;
+      server = oPC_UA_ServerConnectorOut.server;
+      nodeId = oPC_UA_ServerConnectorOut.parentNodeId;
+      nodeNsIdx = oPC_UA_ServerConnectorOut.parentNsIdx;
+      annotation (Diagram(coordinateSystem(preserveAspectRatio=false, extent={{-100,
+                -100},{100,100}}), graphics), Icon(coordinateSystem(
+              preserveAspectRatio=false, extent={{-100,-100},{100,100}}), graphics));
+    end OPC_UA_addObjectNode;
+
+    package Interfaces
+        extends Modelica.Icons.InterfacesPackage;
+
+      connector OPC_UA_ServerConnectorIn
+        input Modelica_DeviceDrivers.Communication.OPC_UA_Server server;
+        input Integer parentNodeId;
+        input Integer parentNsIdx;
+        annotation (Icon(coordinateSystem(preserveAspectRatio=false, extent={{-100,-100},
+                  {100,100}}), graphics={  Rectangle(
+                extent={{-100,50},{100,-30}},
+                fillColor={0,255,0},
+                fillPattern=FillPattern.Sphere),
+              Line(
+                points={{-100,-30},{0,50},{100,-30}},
+                color={255,255,255},
+                thickness=0.5),
+              Line(
+                points={{-52,-30},{0,10},{50,-30}},
+                color={255,255,255},
+                thickness=0.5),
+              Line(
+                points={{-110,-8},{-110,66},{112,66},{112,-10}},
+                color={0,127,0},
+                thickness=0.5,
+                smooth=Smooth.None)}));
+      end OPC_UA_ServerConnectorIn;
+
+      connector OPC_UA_ServerConnectorOut
+
+        output Modelica_DeviceDrivers.Communication.OPC_UA_Server server;
+        output Integer parentNodeId;
+        output Integer parentNsIdx;
+
+        annotation (Icon(graphics={        Rectangle(
+                extent={{-80,60},{120,-20}},
+                fillColor={150,255,0},
+                fillPattern=FillPattern.Sphere),
+              Line(
+                points={{-80,60},{20,-20},{120,60}},
+                color={255,255,255},
+                thickness=0.5),
+              Line(
+                points={{-32,58},{20,18},{70,58}},
+                color={255,255,255},
+                thickness=0.5),
+              Line(
+                points={{-90,36},{-90,-38},{132,-38},{132,38}},
+                color={150,255,0},
+                thickness=0.5,
+                smooth=Smooth.None)}));
+      end OPC_UA_ServerConnectorOut;
+    end Interfaces;
+
+    model OPC_UA_Node
+      extends Modelica_DeviceDrivers.Utilities.Icons.BaseIcon;
+      parameter String nodeName = "nodeName";
+      parameter Integer nodeNsIdx = 1;
+      parameter Integer nodeId = 101;
+      Interfaces.OPC_UA_ServerConnectorIn oPC_UA_ServerConnectorIn    annotation (Placement(transformation(extent={{-10,-10},
+                {10,10}},
+            rotation=180,
+            origin={0,100})));
+      annotation (Diagram(coordinateSystem(preserveAspectRatio=false, extent={{-100,-100},{100,100}}),
+                                   graphics), Icon(coordinateSystem(
+              preserveAspectRatio=false, extent={{-100,-100},{100,100}}), graphics={
+              Bitmap(extent={{-72,90},{68,-20}}, fileName="modelica://Modelica_DeviceDrivers/Resources/Images/open62541.png"), Text(
+              extent={{-56,-44},{50,-64}},
+              lineColor={0,0,255},
+              textString="%nodeName
+(%nodeNsIdx:%nodeId)")}));
+    end OPC_UA_Node;
+  end OPC_UA;
 end Communication;

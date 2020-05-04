@@ -23,3 +23,4 @@ TestRealtimeSynchronize
 TestSerialPackager_TCPIPServer
 TestSerialPackager_TCPIPServerMultipleClients
 TestOPC_UA_Server
+TestOPC_UA_Server2

@@ -20,7 +20,6 @@ int startOPCUAserver(void* opcua)
 {
 	UA_Server *server = (UA_Server*)opcua;
 	UA_StatusCode retval = UA_Server_run(server, &running);
-	UA_Server_delete(server);
 	return retval;
 }
 
@@ -28,10 +27,10 @@ void deleteOPCUAserver(void* opcua)
 {
 	UA_Server *server = (UA_Server*)opcua;
 	running = false;
-	//UA_Server_delete(server);  // sometimes, this makes the pocess crash
+	UA_Server_delete(server);  // sometimes, this makes the process crash
 }
 
-void addIntVariable(void * opcua,  char * name, int value)
+void addIntVariable(void * opcua,  char * name, int nodeNsIdx, int intNodeId, int parentNsIdx, int intParentNodeId, int value)
 {
 	UA_Server *server = (UA_Server*)opcua;
 
@@ -44,18 +43,32 @@ void addIntVariable(void * opcua,  char * name, int value)
 	attr.dataType = UA_TYPES[UA_TYPES_INT32].typeId;
 	attr.accessLevel = UA_ACCESSLEVELMASK_READ | UA_ACCESSLEVELMASK_WRITE;
 
-
 	/* Add the variable node to the information model */
-	UA_NodeId myIntegerNodeId = UA_NODEID_STRING(1, name);
-	UA_QualifiedName myIntegerName = UA_QUALIFIEDNAME(1, name);
-	UA_NodeId parentNodeId = UA_NODEID_NUMERIC(0, UA_NS0ID_OBJECTSFOLDER);
+	UA_NodeId IntegerNodeId = UA_NODEID_NUMERIC(nodeNsIdx, intNodeId);
+	UA_QualifiedName myIntegerName = UA_QUALIFIEDNAME(intNodeId, name);
+	//UA_NodeId parentNodeId = UA_NODEID_NUMERIC(0, UA_NS0ID_OBJECTSFOLDER);
+	UA_NodeId parentNodeId = UA_NODEID_NUMERIC(parentNsIdx, intParentNodeId);
 	UA_NodeId parentReferenceNodeId = UA_NODEID_NUMERIC(0, UA_NS0ID_ORGANIZES);
-	UA_Server_addVariableNode(server, myIntegerNodeId, parentNodeId,
+	UA_Server_addVariableNode(server, IntegerNodeId, parentNodeId,
 		parentReferenceNodeId, myIntegerName,
 		UA_NODEID_NUMERIC(0, UA_NS0ID_BASEDATAVARIABLETYPE), attr, NULL, NULL);
 }
 
-void addDoubleVariable(void * opcua, char * name, double value)
+void writeIntVariable(void * opcua, char * name, int nodeNsIdx, int intNodeId, int value)
+{
+	UA_Server *server = (UA_Server*)opcua;
+
+	UA_NodeId IntegerNodeId = UA_NODEID_NUMERIC (nodeNsIdx, intNodeId);
+
+	/* Write a different integer value */
+	UA_Int32 myInteger = value;
+	UA_Variant myVar;
+	UA_Variant_init(&myVar);
+	UA_Variant_setScalar(&myVar, &myInteger, &UA_TYPES[UA_TYPES_INT32]);
+	UA_Server_writeValue(server, IntegerNodeId, myVar);
+}
+
+void addDoubleVariable(void * opcua, char * name, int nodeNsIdx, int intNodeId, int parentNsIdx, int intParentNodeId, double value)
 {
 	UA_Server *server = (UA_Server*)opcua;
 
@@ -69,57 +82,46 @@ void addDoubleVariable(void * opcua, char * name, double value)
 	attr.accessLevel = UA_ACCESSLEVELMASK_READ | UA_ACCESSLEVELMASK_WRITE;
 
 	/* Add the variable node to the information model */
-	UA_NodeId myDoubleNodeId = UA_NODEID_STRING(1, name);
+	//UA_NodeId myDoubleNodeId = UA_NODEID_STRING(1, name);
+	UA_NodeId doubleNodeId = UA_NODEID_NUMERIC(nodeNsIdx, intNodeId);
 	UA_QualifiedName myDoubleName = UA_QUALIFIEDNAME(1, name);
-	UA_NodeId parentNodeId = UA_NODEID_NUMERIC(0, UA_NS0ID_OBJECTSFOLDER);
+	//UA_NodeId parentNodeId = UA_NODEID_NUMERIC(0, UA_NS0ID_OBJECTSFOLDER);
+	UA_NodeId parentNodeId = UA_NODEID_NUMERIC(parentNsIdx, intParentNodeId);
 	UA_NodeId parentReferenceNodeId = UA_NODEID_NUMERIC(0, UA_NS0ID_ORGANIZES);
-	UA_Server_addVariableNode(server, myDoubleNodeId, parentNodeId,
+	UA_Server_addVariableNode(server, doubleNodeId, parentNodeId,
 		parentReferenceNodeId, myDoubleName,
 		UA_NODEID_NUMERIC(0, UA_NS0ID_BASEDATAVARIABLETYPE), attr, NULL, NULL);
 }
 
-void writeIntVariable(void * opcua, char * name, int value)
+
+void writeDoubleVariable(void * opcua, char * name, int nodeNsIdx, int intNodeId, double value)
 {
 	UA_Server *server = (UA_Server*)opcua;
 
-	UA_NodeId myIntegerNodeId = UA_NODEID_STRING(1, name);
-
-	/* Write a different integer value */
-	UA_Int32 myInteger = value;
-	UA_Variant myVar;
-	UA_Variant_init(&myVar);
-	UA_Variant_setScalar(&myVar, &myInteger, &UA_TYPES[UA_TYPES_INT32]);
-	UA_Server_writeValue(server, myIntegerNodeId, myVar);
-
-	///* Set the status code of the value to an error code. The function
-	//* UA_Server_write provides access to the raw service. The above
-	//* UA_Server_writeValue is syntactic sugar for writing a specific node
-	//* attribute with the write service. */
-	//UA_WriteValue wv;
-	//UA_WriteValue_init(&wv);
-	//wv.nodeId = myIntegerNodeId;
-	//wv.attributeId = UA_ATTRIBUTEID_VALUE;
-	//wv.value.status = UA_STATUSCODE_BADNOTCONNECTED;
-	//wv.value.hasStatus = true;
-	//UA_Server_write(server, &wv);
-	//
-	///* Reset the variable to a good statuscode with a value */
-	//wv.value.hasStatus = false;
-	//wv.value.value = myVar;
-	//wv.value.hasValue = true;
-	//UA_Server_write(server, &wv);
-}
-
-void writeDoubleVariable(void * opcua, char * name, double value)
-{
-	UA_Server *server = (UA_Server*)opcua;
-
-	UA_NodeId myDoubleNodeId = UA_NODEID_STRING(1, name);
+	//UA_NodeId myDoubleNodeId = UA_NODEID_STRING(1, name);
+	UA_NodeId doubleNodeId = UA_NODEID_NUMERIC(nodeNsIdx, intNodeId);
 
 	/* Write a different integer value */
 	UA_Double myDouble = value;
 	UA_Variant myVar;
 	UA_Variant_init(&myVar);
 	UA_Variant_setScalar(&myVar, &myDouble, &UA_TYPES[UA_TYPES_DOUBLE]);
-	UA_StatusCode sc = UA_Server_writeValue(server, myDoubleNodeId, myVar);
+	UA_StatusCode sc = UA_Server_writeValue(server, doubleNodeId, myVar);
 }
+
+void addObject(void * opcua, char* name, int nodeNsIdx, int intNodeId, int parentNsIdx, int intParentNodeId) {
+	UA_Server *server = (UA_Server*)opcua;
+
+	UA_NodeId objNodeId = UA_NODEID_NUMERIC(nodeNsIdx, intNodeId);
+	UA_NodeId parentNodeId = UA_NODEID_NUMERIC(parentNsIdx, intParentNodeId);
+
+	UA_ObjectAttributes oAttr = UA_ObjectAttributes_default;
+	oAttr.displayName = UA_LOCALIZEDTEXT("en-US", name);
+	UA_Server_addObjectNode(server, objNodeId,
+		parentNodeId,
+		UA_NODEID_NUMERIC(0, UA_NS0ID_ORGANIZES),
+		UA_QUALIFIEDNAME(nodeNsIdx, name),
+		UA_NODEID_NUMERIC(0, UA_NS0ID_BASEOBJECTTYPE),
+		oAttr, NULL, &objNodeId);
+}
+
