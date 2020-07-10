@@ -8,9 +8,9 @@ model TestOPC_UA_ServerClient
   Communication.OPC_UA.OPC_UA_addIntNode addAIntComponent(
     enableExternalTrigger=false,
     startTime=0.0,
-    sampleTime=0.1,
     parentRefId=Modelica_DeviceDrivers.Blocks.Communication.OPC_UA.Types.ReferenceID.hasComponent,
-    nodeName="someIntComponent")
+    nodeName="someIntComponent",
+    sampleTime=0.05)
     annotation (Placement(transformation(extent={{-32,34},{-12,54}})));
 
   Modelica.Blocks.Sources.Sine sine(amplitude=100, freqHz=0.01)
@@ -20,7 +20,8 @@ model TestOPC_UA_ServerClient
   Communication.OPC_UA.OPC_UA_Client oPC_UA_Client(endPointURL=
         "opc.tcp://BFT172:4840/")
     annotation (Placement(transformation(extent={{12,66},{32,86}})));
-  Communication.OPC_UA.OPC_UA_readIntNode oPC_UA_readIntNode annotation (
+  Communication.OPC_UA.OPC_UA_readIntNode oPC_UA_readIntNode(sampleTime=0.1)
+                                                             annotation (
       Placement(transformation(
         extent={{-10,-10},{10,10}},
         rotation=0,

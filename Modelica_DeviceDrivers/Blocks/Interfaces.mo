@@ -98,12 +98,4 @@ package Interfaces
                 "modelica://Modelica_DeviceDrivers/Resources/Images/Icons/package.png")}));
   end PartialSoftingCANMessage;
 
-  connector OPC_UA_ServerConnectorIn
-    input Modelica_DeviceDrivers.Communication.OPC_UA_Server server;
-  end OPC_UA_ServerConnectorIn;
-
-  connector OPC_UA_ServerConnectorOut
-
-    output Modelica_DeviceDrivers.Communication.OPC_UA_Server server;
-  end OPC_UA_ServerConnectorOut;
 end Interfaces;
