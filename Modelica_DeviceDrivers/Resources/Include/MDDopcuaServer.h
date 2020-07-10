@@ -215,6 +215,13 @@ int MDD_opcuaClientReadInt(void * p_opcua, int nodeNsIdx, int nodeId)
 	return readIntValue(opcua->client, nodeNsIdx, nodeId);
 }
 
+double MDD_opcuaClientReadDouble(void * p_opcua, int nodeNsIdx, int nodeId)
+{
+	MDDopcuaClient * opcua = (MDDopcuaClient *) p_opcua;
+	//ModelicaFormatMessage("MDDopcuaServer.h: MDD_opcuaClientReadReal %d:%d\n",nodeNsIdx,nodeId);
+	return readDoubleValue(opcua->client, nodeNsIdx, nodeId);
+}
+
 #else
 
 #error "Modelica_DeviceDrivers: No support of OPC UA for your platform"

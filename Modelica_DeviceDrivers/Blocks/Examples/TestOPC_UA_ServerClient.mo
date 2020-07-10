@@ -26,6 +26,11 @@ model TestOPC_UA_ServerClient
         extent={{-10,-10},{10,10}},
         rotation=0,
         origin={22,44})));
+  Communication.OPC_UA.OPC_UA_readDoubleNode oPC_UA_readDoubleNode(nodeId=102)
+    annotation (Placement(transformation(extent={{44,34},{64,54}})));
+  Communication.OPC_UA.OPC_UA_addRealNode addARealORganizedNode(nodeName=
+        "realChild", nodeId=102)
+    annotation (Placement(transformation(extent={{-32,-2},{-12,18}})));
 equation
   connect(sine.y, realToInteger.u) annotation (Line(
       points={{-81,48},{-74,48}},
@@ -45,8 +50,16 @@ equation
       points={{-22.5,65.4},{-22.5,58.7},{-22.3,58.7},{-22.3,54.1}},
       color={0,127,0},
       smooth=Smooth.None));
+  connect(oPC_UA_Client.oPC_UA_ClientConnectorOut, oPC_UA_readDoubleNode.oPC_UA_ClientConnectorIn)
+    annotation (Line(points={{21.9,65.9},{37.95,65.9},{37.95,54},{54,54}},
+        color={85,170,255}));
+  connect(addARealORganizedNode.oPC_UA_ServerConnectorIn, addAIntComponent.oPC_UA_ServerConnectorOut)
+    annotation (Line(points={{-22.3,18.1},{-22.3,24.05},{-22.4,24.05},{-22.4,
+          33.8}}, color={0,127,0}));
+  connect(addARealORganizedNode.realVarIn, sine.y)
+    annotation (Line(points={{-31,7.8},{-81,7.8},{-81,48}}, color={0,0,127}));
   annotation (experiment(StopTime=20), __Dymola_experimentSetupOutput(textual=
           true),
     Diagram(coordinateSystem(preserveAspectRatio=false, extent={{-100,-100},{
-            100,100}}), graphics));
+            100,100}})));
 end TestOPC_UA_ServerClient;

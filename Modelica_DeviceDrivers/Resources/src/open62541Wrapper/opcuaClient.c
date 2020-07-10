@@ -45,3 +45,23 @@ int readIntValue(void* client_vp, int nodeNsIdx, int intNodeId)
 	}
 	return ret;
 }
+
+double readDoubleValue(void* client_vp, int nodeNsIdx, int intNodeId)
+{
+	double ret = 0.0;
+	UA_Client *client = (UA_Client*)client_vp;
+
+	UA_Variant value; /* Variants can hold scalar values and arrays of any type */
+	UA_Variant_init(&value);
+
+	/* NodeId of the variable holding the current time */
+	UA_NodeId nodeId = UA_NODEID_NUMERIC(nodeNsIdx, intNodeId);
+	UA_StatusCode retval = UA_Client_readValueAttribute(client, nodeId, &value);
+	//
+	if (retval == UA_STATUSCODE_GOOD && UA_Variant_hasScalarType(&value, &UA_TYPES[UA_TYPES_DOUBLE]))
+	{
+		UA_Double doubleData = *(UA_Double *)value.data;
+		ret = (double)doubleData;
+	}
+	return ret;
+}
