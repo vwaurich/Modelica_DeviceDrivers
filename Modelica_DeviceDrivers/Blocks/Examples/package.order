@@ -25,3 +25,4 @@ TestSerialPackager_TCPIPServerMultipleClients
 TestOPC_UA_Server
 TestOPC_UA_Server2
 TestOPC_UA_ServerClient
+Pendulum_OPCUA

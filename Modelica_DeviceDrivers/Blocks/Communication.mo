@@ -1796,6 +1796,43 @@ TCP/IP server configuration block. This block is supposed to be used as an inner
               textString="(%nodeNsIdx:%nodeId)")}));
     end OPC_UA_readIntNode;
 
+    model OPC_UA_readDoubleNode
+      extends Modelica_DeviceDrivers.Utilities.Icons.BaseIcon;
+      extends
+        Modelica_DeviceDrivers.Blocks.Communication.Internal.PartialSampleTrigger;
+
+      parameter Integer nodeNsIdx = 1;
+      parameter Integer nodeId = 101;
+
+      Modelica.Blocks.Interfaces.RealOutput doubleVarOut annotation (Placement(
+            transformation(
+            extent={{-20,-20},{20,20}},
+            rotation=0,
+            origin={112,0}), iconTransformation(extent={{90,-18},{130,22}})));
+      Interfaces.OPC_UA_ClientConnectorIn oPC_UA_ClientConnectorIn annotation (Placement(transformation(extent={{-10,-10},
+                {10,10}},
+            rotation=180,
+            origin={0,100}),     iconTransformation(extent={{-20,-20},{20,20}},
+            rotation=180,
+            origin={0,100})));
+    equation
+      when actTrigger then
+        doubleVarOut =
+          Modelica_DeviceDrivers.Communication.OPC_UA_Client_.readDoubleVar(
+          oPC_UA_ClientConnectorIn.client,
+          nodeNsIdx,
+          nodeId);
+      end when;
+
+      annotation (Diagram(coordinateSystem(preserveAspectRatio=false, extent={{-100,
+                -100},{100,100}})),           Icon(coordinateSystem(
+              preserveAspectRatio=false, extent={{-100,-100},{100,100}}), graphics={
+              Bitmap(extent={{-70,84},{70,-26}}, fileName="modelica://Modelica_DeviceDrivers/Resources/Images/open62541.png"), Text(
+              extent={{-46,-34},{60,-54}},
+              lineColor={0,0,255},
+              textString="(%nodeNsIdx:%nodeId)")}));
+    end OPC_UA_readDoubleNode;
+
     package Interfaces
         extends Modelica.Icons.InterfacesPackage;
 
